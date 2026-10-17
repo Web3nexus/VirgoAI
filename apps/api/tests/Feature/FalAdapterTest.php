@@ -85,7 +85,7 @@ it('is not configured without a key and makes no HTTP call', function () {
 it('refuses a model this app does not call', function () {
     Http::fake();
 
-    $result = (new FalAdapter)->generate(imageRequest(modelKey: 'fal-ai/flux/schnell'));
+    $result = (new FalAdapter)->generate(imageRequest(modelKey: 'fal-ai/veo3.1'));
 
     expect($result->ok)->toBeFalse()
         ->and($result->error)->toContain('not one this app supports');
@@ -275,5 +275,16 @@ it('keeps the payload map in sync with the endpoint list', function () {
         expect($spec['fields'])->not->toBeEmpty("fields for {$endpointId}");
     }
 
-    expect(FalEndpoints::selectableIds())->toBe([FalEndpoints::IMAGE_TEXT, FalEndpoints::VIDEO_IMAGE]);
+    expect(FalEndpoints::selectableIds())->toBe([
+        FalEndpoints::IMAGE_TEXT,
+        FalEndpoints::IMAGE_FLUX_SCHNELL,
+        FalEndpoints::IMAGE_NANO_BANANA,
+        FalEndpoints::VIDEO_IMAGE,
+        FalEndpoints::VIDEO_SEEDANCE_FAST,
+        FalEndpoints::VIDEO_HAILUO,
+        FalEndpoints::VIDEO_KLING,
+        FalEndpoints::IMAGE_GEMINI,
+        FalEndpoints::VIDEO_VEO_31_FAST,
+        FalEndpoints::VIDEO_VEO_3_FAST,
+    ]);
 });

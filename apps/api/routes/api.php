@@ -27,6 +27,7 @@ use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\ReferenceController;
 use App\Http\Controllers\Api\RegistryController;
 use App\Http\Controllers\Api\RemixController;
+use App\Http\Controllers\Api\ModelController;
 use App\Http\Controllers\Api\SkillController;
 use App\Http\Controllers\Api\ToolController;
 use App\Http\Controllers\Api\UsageController;
@@ -84,6 +85,7 @@ Route::prefix('v1')->group(function () {
 
         // The skills library. Each skill tells the model how to work when it is selected.
         Route::get('/skills', [SkillController::class, 'index']);
+        Route::get('/model-options', [ModelController::class, 'index']);
 
         // The menus for environment, character and look.
         Route::get('/styles', fn () => response()->json(StylePresets::catalog()));

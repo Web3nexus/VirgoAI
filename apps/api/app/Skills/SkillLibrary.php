@@ -2,6 +2,7 @@
 
 namespace App\Skills;
 
+use App\Ai\ModelDefaults;
 use App\Models\Project;
 
 /**
@@ -141,6 +142,94 @@ for ballads, quick cuts for dance tracks.
 TXT,
                 'defaults' => ['format' => 'landscape_16_9', 'quality' => '1080p'],
             ],
+            'real_estate' => [
+                'label' => 'Real Estate Tour',
+                'category' => 'Real Estate',
+                'mode' => 'full_video',
+                'icon' => 'video',
+                'description' => 'A property walkthrough: the outside, the main rooms in the order a visitor walks them, and a closing view.',
+                'produces' => 'Full video, landscape 16:9, 5 scenes of 5 seconds (about 25 s).',
+                'instructions' => <<<'TXT'
+Write a property walkthrough in 4 to 6 scenes. Open on the exterior or the entrance. Move through the main rooms in the
+order a visitor would walk them, one room per scene. Close on the outside view or the best room. Use only the features the
+request names (rooms, size, views). Do not invent a price, a floor area, a school district or a sale claim. Keep the
+camera slow and steady: a dolly or a pan, never a fast spin.
+TXT,
+                'defaults' => ['format' => 'landscape_16_9', 'quality' => '720p'],
+            ],
+            'ugc_ad' => [
+                'label' => 'UGC-Style Ad',
+                'category' => 'Marketing',
+                'mode' => 'full_video',
+                'icon' => 'marketing',
+                'description' => 'A handheld ad that looks shot on a phone by a real person showing the product in daily life.',
+                'produces' => 'Full video, vertical 9:16, 4 scenes of 5 seconds (about 20 s).',
+                'instructions' => <<<'TXT'
+Write a short ad shot to look filmed on a phone by one real-looking person at home or out and about. Use handheld camera
+moves and natural light. Scene 1 is a direct hook to camera. Scene 2 shows the product in use. Scene 3 shows the result.
+Scene 4 is one call to action, shown on the product or in the presenter's hand. Keep the presenter identical in every
+scene. Do not invent a testimonial, a rating, a before-and-after result or a health, money or safety claim.
+TXT,
+                'defaults' => ['format' => 'vertical_9_16', 'quality' => '720p'],
+            ],
+            'micro_drama' => [
+                'label' => 'Micro Drama',
+                'category' => 'Story',
+                'mode' => 'full_video',
+                'icon' => 'video',
+                'description' => 'One episode of a vertical drama: a conflict in the first second, a reversal, and a cliffhanger.',
+                'produces' => 'Full video, vertical 9:16, 6 scenes of 5 seconds (about 30 s), one episode.',
+                'instructions' => <<<'TXT'
+Write one episode of a vertical drama in 5 to 6 scenes. Open on the conflict within the first second. Put one reversal in
+the middle. End on a cliffhanger that makes the next episode necessary. Use two or three characters at most, and keep
+their faces and wardrobe the same in every scene. Use close-ups for emotion and keep each scene to one exchange. Do not
+put subtitles or captions in the picture.
+TXT,
+                'defaults' => ['format' => 'vertical_9_16', 'quality' => '720p'],
+            ],
+            'brand_film' => [
+                'label' => 'Brand Film',
+                'category' => 'Marketing',
+                'mode' => 'full_video',
+                'icon' => 'marketing',
+                'description' => 'A brand story told through a mood, real people at work and one closing line, rather than a feature list.',
+                'produces' => 'Full video, landscape 16:9, 5 scenes of 5 seconds (about 25 s).',
+                'instructions' => <<<'TXT'
+Write a brand film in 4 to 5 scenes that shows what the brand stands for rather than listing features. Scene 1 sets a place
+and a mood. Scenes 2 and 3 show people doing the work or using the product in a real setting. Scene 4 shows the result.
+Close on a single line of brand copy. Use the colours and tone the request names. Do not add a claim, a statistic or an
+award.
+TXT,
+                'defaults' => ['format' => 'landscape_16_9', 'quality' => '720p'],
+            ],
+            'film_trailer' => [
+                'label' => 'Film Trailer',
+                'category' => 'Story',
+                'mode' => 'full_video',
+                'icon' => 'video',
+                'description' => 'A cinematic teaser: the world, the hero, a rising threat, and one held final image.',
+                'produces' => 'Full video, landscape 16:9, 6 scenes of 5 seconds (about 30 s).',
+                'instructions' => <<<'TXT'
+Write a cinematic trailer in 5 to 6 scenes. Begin with the world, then introduce the hero and the conflict. Build tension
+with faster cuts, and end on one held image that is the strongest shot. Vary the scale: wide shots for the world,
+close-ups for the hero. Keep the hero identical across scenes. Do not put titles, credits or on-screen text in the picture.
+TXT,
+                'defaults' => ['format' => 'landscape_16_9', 'quality' => '720p'],
+            ],
+            'promo_video' => [
+                'label' => 'Promo Video',
+                'category' => 'Marketing',
+                'mode' => 'full_video',
+                'icon' => 'marketing',
+                'description' => 'A promotion for a product, event or offer: what it is, the benefit in use, and the one action to take.',
+                'produces' => 'Full video, landscape 16:9, 4 scenes of 5 seconds (about 20 s).',
+                'instructions' => <<<'TXT'
+Write a promotional video in 4 scenes: the thing being promoted, the benefit in use, the proof the request states, and a
+closing frame with the one action to take. Use only the offer, date and benefits the request contains. Do not invent a
+price, a discount or a deadline.
+TXT,
+                'defaults' => ['format' => 'landscape_16_9', 'quality' => '720p'],
+            ],
             'storyboard' => [
                 'label' => 'Storyboard Only',
                 'category' => 'Planning',
@@ -168,6 +257,129 @@ TXT,
                 'defaults' => ['format' => 'landscape_16_9'],
             ],
         ];
+    }
+
+    /**
+     * The guided form a Quick Start shows before it runs. Each field is one of:
+     * text, textarea (max characters), choice (options), slider (min, max, step, default), reference (one image).
+     * brief is the label the value is written under in the prompt sent to the model.
+     *
+     * @return array<string, list<array<string, mixed>>>
+     */
+    public static function quickStarts(): array
+    {
+        return [
+            'real_estate' => [
+                ['key' => 'property', 'type' => 'textarea', 'label' => 'Describe the property', 'brief' => 'Property', 'required' => true, 'max' => 1000, 'placeholder' => 'Rooms, size, outdoor space, views and the neighbourhood. Or paste the listing details.'],
+                ['key' => 'preferences', 'type' => 'textarea', 'label' => 'Any preferences for your video?', 'brief' => 'Preferences', 'required' => false, 'max' => 500, 'placeholder' => 'e.g. Start with the exterior, focus on the kitchen and pool, and keep the pacing calm and inviting.'],
+            ],
+            'ad_spot' => [
+                ['key' => 'product_image', 'type' => 'reference', 'label' => 'Product image', 'brief' => null, 'required' => true],
+                ['key' => 'product_name', 'type' => 'text', 'label' => "What's it called?", 'brief' => 'Product', 'required' => true, 'max' => 80, 'placeholder' => 'e.g. Glow Lip Balm'],
+                ['key' => 'benefits', 'type' => 'textarea', 'label' => 'Why is it worth buying?', 'brief' => 'Benefits', 'required' => true, 'max' => 300, 'placeholder' => 'Highlight key benefits, results and the feelings it delivers.'],
+            ],
+            'micro_drama' => [
+                ['key' => 'characters', 'type' => 'textarea', 'label' => 'Who is in your story?', 'brief' => 'Characters', 'required' => true, 'max' => 800, 'placeholder' => 'Describe each character (up to four): age, look, wardrobe and role.'],
+                ['key' => 'story', 'type' => 'textarea', 'label' => 'What happens in your story?', 'brief' => 'Story', 'required' => true, 'max' => 5000, 'placeholder' => 'e.g. A barista keeps finding cryptic notes hidden in coffee cups'],
+                ['key' => 'vibe', 'type' => 'choice', 'label' => "What's the vibe?", 'brief' => 'Vibe', 'required' => false, 'default' => null, 'options' => ['romance' => 'Romance', 'thriller' => 'Thriller', 'comedy' => 'Comedy', 'horror' => 'Horror']],
+            ],
+            'explainer' => [
+                ['key' => 'topic', 'type' => 'textarea', 'label' => 'What do you want to explain?', 'brief' => 'Topic', 'required' => true, 'max' => 500, 'placeholder' => 'e.g. How photosynthesis works, why sleep matters, or how to use our new feature…'],
+                ['key' => 'audience', 'type' => 'text', 'label' => "Who's your audience?", 'brief' => 'Audience', 'required' => false, 'max' => 200, 'placeholder' => 'e.g. High school students, Professionals, New customers'],
+                ['key' => 'style', 'type' => 'choice', 'label' => 'Visual style', 'brief' => 'Style', 'required' => true, 'default' => 'cinematic', 'options' => ['cinematic' => 'Cinematic', 'whiteboard' => 'Whiteboard', 'minimal' => 'Minimal', 'illustrated' => 'Illustrated']],
+                ['key' => 'reference', 'type' => 'reference', 'label' => 'Add reference', 'brief' => null, 'required' => false],
+            ],
+            'short_form' => [
+                ['key' => 'characters', 'type' => 'textarea', 'label' => 'Who is in your story?', 'brief' => 'Characters', 'required' => true, 'max' => 800, 'placeholder' => 'Describe the person on camera: age, look, wardrobe and voice.'],
+                ['key' => 'topic', 'type' => 'textarea', 'label' => 'What are they talking about?', 'brief' => 'Talking about', 'required' => true, 'max' => 500, 'placeholder' => 'Your values, mission, and what makes you different…'],
+                ['key' => 'vibe', 'type' => 'choice', 'label' => "What's the vibe?", 'brief' => 'Vibe', 'required' => false, 'default' => null, 'options' => ['casual' => 'Casual', 'funny' => 'Funny', 'inspiring' => 'Inspiring', 'chill' => 'Chill', 'luxury' => 'Luxury']],
+            ],
+            'video_generator' => [
+                ['key' => 'story', 'type' => 'textarea', 'label' => "What's your film about?", 'brief' => 'Film', 'required' => true, 'max' => 5000, 'placeholder' => 'Write your story, a sense, or even a feeling…'],
+                ['key' => 'style', 'type' => 'choice', 'label' => 'Visual style', 'brief' => 'Visual style', 'required' => false, 'default' => 'cinematic', 'options' => ['cinematic' => 'Cinematic', 'experimental' => 'Experimental', 'monochrome' => 'Monochrome', 'animated' => 'Animated', 'artistic' => 'Artistic']],
+                // The pipeline makes at most 6 scenes of 5 seconds, so the longest film is 30 seconds (DEC-0015).
+                ['key' => 'length', 'type' => 'slider', 'label' => 'How long should it be?', 'brief' => 'Length', 'required' => false, 'min' => 10, 'max' => 30, 'step' => 5, 'default' => 30, 'unit' => 'seconds'],
+                ['key' => 'reference', 'type' => 'reference', 'label' => 'Add reference', 'brief' => null, 'required' => false],
+            ],
+        ];
+    }
+
+    /** @return list<array<string, mixed>> */
+    public static function inputs(?string $key): array
+    {
+        return $key === null ? [] : (self::quickStarts()[$key] ?? []);
+    }
+
+    /**
+     * The errors in a Quick Start's answers, keyed by field. Reference images are checked by the caller, which owns the upload.
+     *
+     * @param  array<string, mixed>  $values
+     * @return array<string, string>
+     */
+    public static function validateInputs(string $key, array $values): array
+    {
+        $errors = [];
+
+        foreach (self::inputs($key) as $field) {
+            if ($field['type'] === 'reference') {
+                continue;
+            }
+
+            $value = self::valueOf($field, $values);
+            $empty = $value === null || trim((string) $value) === '';
+
+            if ($empty) {
+                if ($field['required']) {
+                    $errors[$field['key']] = $field['label'].' is required.';
+                }
+
+                continue;
+            }
+
+            if ($field['type'] === 'choice' && ! array_key_exists((string) $value, $field['options'])) {
+                $errors[$field['key']] = $field['label'].' must be one of the options.';
+            } elseif ($field['type'] === 'slider' && (! is_numeric($value) || $value < $field['min'] || $value > $field['max'])) {
+                $errors[$field['key']] = $field['label'].' must be between '.$field['min'].' and '.$field['max'].'.';
+            } elseif (in_array($field['type'], ['text', 'textarea'], true) && mb_strlen(trim((string) $value)) > $field['max']) {
+                $errors[$field['key']] = $field['label'].' must be '.$field['max'].' characters or fewer.';
+            }
+        }
+
+        return $errors;
+    }
+
+    /**
+     * The prompt a Quick Start run is made from: each answer written under its brief label, in form order.
+     * Answers that are empty (and were not required) are left out.
+     *
+     * @param  array<string, mixed>  $values
+     */
+    public static function compose(string $key, array $values): string
+    {
+        $lines = [];
+
+        foreach (self::inputs($key) as $field) {
+            $value = self::valueOf($field, $values);
+            if ($field['brief'] === null || $value === null || trim((string) $value) === '') {
+                continue;
+            }
+
+            $text = match ($field['type']) {
+                'choice' => $field['options'][(string) $value],
+                'slider' => $value.' '.$field['unit'],
+                default => trim((string) $value),
+            };
+
+            $lines[] = $field['brief'].': '.$text;
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /** @param  array<string, mixed>  $field  @param  array<string, mixed>  $values */
+    private static function valueOf(array $field, array $values): mixed
+    {
+        return $values[$field['key']] ?? $field['default'] ?? null;
     }
 
     /** @return list<string> */
@@ -230,6 +442,9 @@ TXT,
                 'produces' => $skill['produces'],
                 'format' => $skill['defaults']['format'] ?? Project::DEFAULT_FORMAT,
                 'defaults' => $skill['defaults'],
+                'capability' => ModelDefaults::capabilityFor($skill['mode']),
+                'default_model' => ModelDefaults::defaultFor(ModelDefaults::capabilityFor($skill['mode'])),
+                'inputs' => self::inputs($key),
             ])
             ->filter(fn (array $skill) => $category === null || $category === '' || $skill['category'] === $category)
             ->filter(fn (array $skill) => $query === '' || str_contains(mb_strtolower($skill['label'].' '.$skill['description']), $query))

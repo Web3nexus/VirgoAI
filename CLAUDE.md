@@ -13,7 +13,7 @@ Agent guidance for **virgoAi**. Shared across coding agents (Claude Code, OpenCo
 - **Status:** Design & toolchain locked — implementation **not started**. The authoritative build
   brief is [`docs/DEVELOPMENT_PROMPT.md`](./docs/DEVELOPMENT_PROMPT.md); the raw product spec is
   [`prompt.md`](./prompt.md).
-- **Stack (locked):** React + TypeScript + Vite + Tailwind + shadcn/ui · Laravel (PHP) API + queues ·
+- **Stack (locked):** Next.js (App Router) + React + TypeScript + Tailwind + shadcn/ui (DEC-0017) · Laravel (PHP) API + queues ·
   PostgreSQL · Redis · FFmpeg · S3-compatible storage. See DEC-0003.
 
 ## Repository Layout

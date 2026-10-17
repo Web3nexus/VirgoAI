@@ -22,6 +22,8 @@ import {
   CreditCardIcon,
   Film01Icon,
 } from '@hugeicons/core-free-icons'
+import { FollowUsMenu } from '@/components/notifications/FollowUsMenu'
+import { NotificationsMenu } from '@/components/notifications/NotificationsMenu'
 import { Logo } from '@/components/brand/Logo'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -29,6 +31,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -170,7 +173,9 @@ export function AppShell() {
               )}
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56">
-              <DropdownMenuLabel>My account</DropdownMenuLabel>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>My account</DropdownMenuLabel>
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem disabled>
                 <HugeiconsIcon icon={Settings01Icon} size={16} strokeWidth={1.75} />
@@ -192,6 +197,8 @@ export function AppShell() {
             <Logo />
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <FollowUsMenu />
+            <NotificationsMenu />
             <a
               href="/billing"
               className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400">
+  <defs>
+    <radialGradient id="g" cx="30%" cy="25%" r="90%">
+      <stop offset="0" stop-color="#a3e635" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#1f3a0f"/>
+      <stop offset="1" stop-color="#050505"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="400" fill="url(#g)"/>
+  <g fill="none" stroke="#a3e635" stroke-opacity="0.35" stroke-width="2">
+    <circle cx="470" cy="170" r="120"/><circle cx="470" cy="170" r="82"/><circle cx="470" cy="170" r="44"/>
+  </g>
+  <rect x="40" y="40" width="560" height="320" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.12"/>
+  <text x="48" y="330" font-family="Helvetica, Arial, sans-serif" font-size="40" font-weight="700" fill="#ffffff">Audio Generator</text>
+  <text x="48" y="362" font-family="Helvetica, Arial, sans-serif" font-size="16" fill="#a3e635">Script  ·  virgoAi skill</text>
+</svg>

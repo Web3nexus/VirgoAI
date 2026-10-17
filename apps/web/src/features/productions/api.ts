@@ -27,7 +27,7 @@ export type Production = {
   usage?: { steps: { step: string; tokens: number; credits: number; model: string | null; units: number; unit_label: string | null }[]; total_tokens: number; total_platform_tokens: number }
 }
 
-export async function startProduction(payload: { prompt: string; format: string; quality: string; styles?: Record<string, string>; skill_key?: string; reference_url?: string }): Promise<Production> {
+export async function startProduction(payload: { prompt?: string; inputs?: Record<string, string | number>; format: string; quality: string; styles?: Record<string, string>; skill_key?: string; reference_url?: string; video_model?: string }): Promise<Production> {
   const { data } = await api.post<Production>('/productions', payload)
   return data
 }

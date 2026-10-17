@@ -1,10 +1,18 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import './index.css'
 import { LandingPage } from '@/pages/LandingPage'
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root')!
+const page = (
   <StrictMode>
     <LandingPage />
-  </StrictMode>,
+  </StrictMode>
 )
+
+// The build puts the rendered page into #root, so the client takes over that markup instead of replacing it.
+if (root.hasChildNodes()) {
+  hydrateRoot(root, page)
+} else {
+  createRoot(root).render(page)
+}

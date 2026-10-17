@@ -1,0 +1,8 @@
+# virgoAi
+
+> virgoAi is an AI Content Studio. It turns one input (a YouTube link, transcript, uploaded video, script, or idea) into a complete content package: story, script, characters, scenes, images, video, narration, subtitles and thumbnail.
+
+## Product
+
+- [Home](http://localhost:5173/): what virgoAi does and how a run is made.
+- [Studio](http://localhost:5173/): sign in and make content.

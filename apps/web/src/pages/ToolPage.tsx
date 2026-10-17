@@ -35,7 +35,12 @@ function ToolWorkspace({ tool }: { tool: StudioTool }) {
   const [searchParams] = useSearchParams()
   const usableModels = tool.models.filter((model) => model.usable)
   const [prompt, setPrompt] = useState(() => searchParams.get('prompt') ?? '')
-  const [modelKey, setModelKey] = useState<string>(usableModels[0]?.key ?? tool.models[0]?.key ?? '')
+  // The studio passes the model its skill runs with. Without one, or if it cannot run, the first usable model is used.
+  const [modelKey, setModelKey] = useState<string>(() => {
+    const requested = searchParams.get('model')
+    if (requested && usableModels.some((model) => model.key === requested)) return requested
+    return usableModels[0]?.key ?? tool.models[0]?.key ?? ''
+  })
   const [size, setSize] = useState<string>(() => {
     const requested = searchParams.get('size')
     return requested && Object.keys(PROJECT_FORMAT_INFO).includes(requested) ? requested : tool.default_size

@@ -1,5 +1,6 @@
 <?php
 
+use App\Ai\Fal\FalEndpoints;
 use App\Billing\InsufficientCredit;
 use App\Billing\Money;
 use App\Billing\PriceQuoter;
@@ -225,7 +226,7 @@ it('reads fal prices for each endpoint and reports any it could not price', func
     $summary = app(PriceSync::class)->syncFal();
 
     expect($summary['upserted'])->toBe(2)
-        ->and($summary['errors'])->toHaveCount(2)
+        ->and($summary['errors'])->toHaveCount(count(FalEndpoints::all()) - 2)
         ->and(implode(' ', $summary['errors']))->toContain('fal-ai/gpt-image-1.5/edit')
         ->and(implode(' ', $summary['errors']))->toContain('fal-ai/whisper');
 

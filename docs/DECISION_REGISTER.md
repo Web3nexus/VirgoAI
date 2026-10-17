@@ -242,3 +242,14 @@ record in [`DECISIONS/`](./DECISIONS).
 - **Decision**: Skills are defined in code and served at `GET /api/v1/skills`. A selected skill's instructions are given to the model for text, image, and full video runs. Audio runs are not steered.
 - **Consequences**: Skill instructions add prompt cost, included in the full-video estimate. Users cannot yet write their own skills.
 - **Rationale**: [`DECISIONS/0016-skill-library.md`](./DECISIONS/0016-skill-library.md).
+
+---
+
+## DEC-0017: One Next.js App for the Marketing Site and the Studio
+
+- **Status**: ACCEPTED
+- **Date**: 2026-10-17
+- **Context**: The landing page was client-rendered only, and the marketing and studio apps had different origins.
+- **Decision**: One Next.js app (`apps/next`) serves `/` (pre-rendered landing), `/app` (studio), and the public and owner pages. Screens moved unchanged.
+- **Consequences**: `apps/web` and `apps/marketing` are retired but kept until the team deletes them.
+- **Rationale**: [`DECISIONS/0017-nextjs-single-app.md`](./DECISIONS/0017-nextjs-single-app.md).

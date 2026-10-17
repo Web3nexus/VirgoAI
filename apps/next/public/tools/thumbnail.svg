@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120">
+  <defs><radialGradient id="g" cx="30%" cy="25%" r="90%"><stop offset="0" stop-color="#facc15" stop-opacity="0.6"/><stop offset="0.6" stop-color="#3a330b"/><stop offset="1" stop-color="#050505"/></radialGradient></defs>
+  <rect width="160" height="120" rx="12" fill="url(#g)"/>
+  <circle cx="118" cy="50" r="34" fill="none" stroke="#facc15" stroke-opacity="0.35" stroke-width="2"/>
+  <circle cx="118" cy="50" r="20" fill="none" stroke="#facc15" stroke-opacity="0.35" stroke-width="2"/>
+  <text x="12" y="104" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#ffffff">Thumbnail</text>
+</svg>

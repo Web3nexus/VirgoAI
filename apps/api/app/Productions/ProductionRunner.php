@@ -214,7 +214,7 @@ class ProductionRunner
     private function startMotion(Production $production, ProductionScene $scene): void
     {
         $seconds = (int) config('virgoai.productions.scene_seconds', 5);
-        $quote = $this->quotes->quote('fal', FalEndpoints::VIDEO_IMAGE, Capability::Video, $scene->video_prompt, ['duration' => $seconds, 'resolution' => $production->quality, 'size' => $production->format], ['image_url' => $scene->keyframe_url]);
+        $quote = $this->quotes->quote('fal', $production->video_model_key ?? FalEndpoints::VIDEO_IMAGE, Capability::Video, $scene->video_prompt, ['duration' => $seconds, 'resolution' => $production->quality, 'size' => $production->format], ['image_url' => $scene->keyframe_url]);
 
         $result = $this->generations->generate(new GenerationRequest(
             capability: Capability::Video,
@@ -222,7 +222,7 @@ class ProductionRunner
             prompt: $scene->video_prompt,
             inputs: ['image_url' => $scene->keyframe_url],
             options: ['duration' => $seconds, 'resolution' => $production->quality, 'size' => $production->format],
-            requestedModelKey: FalEndpoints::VIDEO_IMAGE,
+            requestedModelKey: $production->video_model_key ?? FalEndpoints::VIDEO_IMAGE,
         ));
 
         if (! $result->ok || ! $result->isQueued()) {
@@ -257,7 +257,7 @@ class ProductionRunner
             }
 
             $scene->forceFill(['status' => 'done', 'clip_path' => $path])->save();
-            $this->usage->record($production->user, UsageRecorder::TYPE_PRODUCTION, $production->id, 'motion', 'fal', FalEndpoints::VIDEO_IMAGE, $this->costOf($scene->motion_cost, $scene->motion_price), [
+            $this->usage->record($production->user, UsageRecorder::TYPE_PRODUCTION, $production->id, 'motion', 'fal', $production->video_model_key ?? FalEndpoints::VIDEO_IMAGE, $this->costOf($scene->motion_cost, $scene->motion_price), [
                 'units' => $seconds = (int) config('virgoai.productions.scene_seconds', 5), 'unit_label' => 'seconds of motion',
             ]);
         }

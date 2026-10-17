@@ -36,7 +36,7 @@ class ProductionService
      *
      * @return array{price_micros: int, cost_micros: int, scenes: int}
      */
-    public function estimate(string $prompt, string $format, string $quality, string $model, ?string $skillKey = null, ?string $reference = null): array
+    public function estimate(string $prompt, string $format, string $quality, string $model, ?string $skillKey = null, ?string $reference = null, ?string $videoModel = null): array
     {
         $system = trim((DirectorSkill::systemPrompt(DirectorSkill::SKILL_DIRECTOR, 'story', []) ?? '')."\n\n".SkillLibrary::brief($skillKey));
         $scenes = (int) config('virgoai.productions.max_scenes', 6);
@@ -47,7 +47,7 @@ class ProductionService
         $keyframe = $reference === null
             ? $this->quotes->quote('fal', FalEndpoints::IMAGE_TEXT, Capability::Image, $prompt, ['size' => $format], [])
             : $this->quotes->quote('fal', FalEndpoints::IMAGE_TEXT, Capability::Image, $prompt, ['size' => $format], ['image_url' => $reference]);
-        $motion = $this->quotes->quote('fal', FalEndpoints::VIDEO_IMAGE, Capability::Video, $prompt, ['duration' => $seconds, 'resolution' => $quality], ['image_url' => 'https://example.invalid/k.png']);
+        $motion = $this->quotes->quote('fal', $videoModel ?? FalEndpoints::VIDEO_IMAGE, Capability::Video, $prompt, ['duration' => $seconds, 'resolution' => $quality], ['image_url' => 'https://example.invalid/k.png']);
 
         return [
             'price_micros' => $script->priceMicros + $scenes * ($keyframe->priceMicros + $motion->priceMicros),
@@ -59,7 +59,7 @@ class ProductionService
     /**
      * @param  array<string, mixed>|null  $styles
      */
-    public function start(User $user, string $prompt, string $format, string $quality, ?array $styles = null, string $model = self::TEXT_MODEL, ?string $skillKey = null, ?string $referenceUrl = null): Production
+    public function start(User $user, string $prompt, string $format, string $quality, ?array $styles = null, string $model = self::TEXT_MODEL, ?string $skillKey = null, ?string $referenceUrl = null, ?string $videoModel = null): Production
     {
         $prompt = trim($prompt);
         if (preg_match('~^(https?://)?(www\.|m\.)?(youtube\.com|youtu\.be)/~i', $prompt)) {
@@ -76,7 +76,8 @@ class ProductionService
         $styles = array_filter((array) $styles);
         $directive = StylePresets::directive($styles);
         $skillKey = $skillKey !== null && SkillLibrary::exists($skillKey) ? $skillKey : null;
-        $estimate = $this->estimate($prompt.' '.$directive, $format, $quality, $model, $skillKey, $referenceUrl);
+        $videoModel = $videoModel !== null && in_array($videoModel, FalEndpoints::selectableVideoIds(), true) ? $videoModel : FalEndpoints::VIDEO_IMAGE;
+        $estimate = $this->estimate($prompt.' '.$directive, $format, $quality, $model, $skillKey, $referenceUrl, $videoModel);
         if ($estimate['price_micros'] > (int) config('virgoai.guardrails.max_production_price_micros')) {
             throw new DomainException('This full video is over the per-production limit. Use a shorter prompt or 720p.');
         }
@@ -88,7 +89,7 @@ class ProductionService
             'tool' => 'production',
             'capability' => Capability::Video->value,
             'provider_key' => 'fal',
-            'model_key' => FalEndpoints::VIDEO_IMAGE,
+            'model_key' => $videoModel,
             'prompt' => mb_substr($prompt, 0, 4000),
             'options' => ['format' => $format, 'quality' => $quality, 'styles' => $styles, 'skill_key' => $skillKey, 'reserved_scenes' => $estimate['scenes']],
             'output_type' => 'video',
@@ -103,6 +104,7 @@ class ProductionService
             'skill_key' => $skillKey,
             'reference_url' => $referenceUrl,
             'model_key' => $model,
+            'video_model_key' => $videoModel,
             'status' => 'queued',
             'generation_id' => $generation->id,
         ]);

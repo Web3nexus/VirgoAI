@@ -298,7 +298,7 @@ export function LandingPage() {
       </main>
 
       <footer className="border-t border-border/60">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 text-sm sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 text-sm sm:px-6 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
           <div>
             <Logo />
             <p className="mt-4 max-w-xs text-muted-foreground">One input, one orchestrated content package.</p>
@@ -306,6 +306,7 @@ export function LandingPage() {
           <FooterCol title="Product" links={[['Platform', '#platform'], ['Tools', '#tools'], ['How it works', '#how']]} />
           <FooterCol title="Resources" links={[['FAQ', '#faq'], ['Trust', '#trust']]} />
           <FooterCol title="Account" links={[['Sign in', appUrl('/login')], ['Get started', startHref]]} />
+          <FooterCol title="Legal" links={[['Privacy', appUrl('/privacy')], ['Terms', appUrl('/terms')], ['Acceptable use', appUrl('/acceptable-use')], ['Cookies', appUrl('/cookies')]]} />
         </div>
         <div className="border-t border-border/60">
           <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row sm:justify-between sm:px-6">

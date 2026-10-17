@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Ai\Fal\FalEndpoints;
 use App\Billing\InsufficientCredit;
 use App\Billing\Money;
 use App\Billing\PriceUnavailable;
@@ -47,7 +48,8 @@ class ProductionController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'prompt' => ['required', 'string', 'min:10', 'max:4000'],
+            'prompt' => ['nullable', 'string', 'max:4000'],
+            'inputs' => ['nullable', 'array'],
             'format' => ['nullable', 'string', Rule::in(array_keys(Project::FORMATS))],
             'quality' => ['required', 'string', Rule::in(['720p', '1080p'])],
             'styles' => ['nullable', 'array'],
@@ -55,15 +57,25 @@ class ProductionController extends Controller
             'styles.character' => ['nullable', 'string'],
             'styles.look' => ['nullable', 'string'],
             'skill_key' => ['nullable', 'string', Rule::in(SkillLibrary::keys())],
+            'video_model' => ['nullable', 'string', Rule::in(FalEndpoints::selectableVideoIds())],
             'reference_url' => ['nullable', 'string', 'max:2048', new OwnedReference],
         ]);
+
+        // A Quick Start takes its answers as a form. The prompt is written from them here, so the server checks them.
+        if (SkillLibrary::inputs($data['skill_key'] ?? null) !== []) {
+            $data['prompt'] = $this->quickStartPrompt($data);
+        }
+
+        if (mb_strlen(trim((string) ($data['prompt'] ?? ''))) < 10) {
+            throw ValidationException::withMessages(['prompt' => 'Write at least 10 characters.']);
+        }
 
         try {
             // A selected skill decides the shape its video is made in. Without one, the request's format is used.
             $format = isset($data['skill_key'])
                 ? SkillLibrary::get($data['skill_key'])['defaults']['format'] ?? Project::DEFAULT_FORMAT
                 : ($data['format'] ?? Project::DEFAULT_FORMAT);
-            $production = $this->service->start($request->user(), $data['prompt'], $format, $data['quality'], $data['styles'] ?? null, ProductionService::TEXT_MODEL, $data['skill_key'] ?? null, $data['reference_url'] ?? null);
+            $production = $this->service->start($request->user(), $data['prompt'], $format, $data['quality'], $data['styles'] ?? null, ProductionService::TEXT_MODEL, $data['skill_key'] ?? null, $data['reference_url'] ?? null, $data['video_model'] ?? null);
         } catch (DomainException $e) {
             throw ValidationException::withMessages(['prompt' => $e->getMessage()]);
         } catch (PriceUnavailable $e) {
@@ -73,6 +85,32 @@ class ProductionController extends Controller
         }
 
         return response()->json($this->present($production->refresh(), true), 201);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function quickStartPrompt(array $data): string
+    {
+        $key = $data['skill_key'];
+        $values = $data['inputs'] ?? [];
+        $errors = [];
+
+        foreach (SkillLibrary::validateInputs($key, $values) as $field => $message) {
+            $errors["inputs.{$field}"] = $message;
+        }
+
+        foreach (SkillLibrary::inputs($key) as $field) {
+            if ($field['type'] === 'reference' && $field['required'] && empty($data['reference_url'])) {
+                $errors['reference_url'] = $field['label'].' is required.';
+            }
+        }
+
+        if ($errors !== []) {
+            throw ValidationException::withMessages($errors);
+        }
+
+        return SkillLibrary::compose($key, $values);
     }
 
     public function show(Request $request, string $production): JsonResponse

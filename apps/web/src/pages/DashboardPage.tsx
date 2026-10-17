@@ -17,6 +17,7 @@ import { RecentProductions } from '@/components/projects/RecentProductions'
 import { ModeMenu } from '@/components/skills/ModeMenu'
 import { ReferenceControl, type Reference } from '@/components/skills/ReferenceControl'
 import { ModelMenu } from '@/components/models/ModelMenu'
+import { useModelOptions, type ModelCapability } from '@/features/models/hooks'
 import { QualityMenu } from '@/components/projects/QualityMenu'
 import { apiErrorMessage } from '@/lib/api'
 import { skillCover, useSkills, type Skill } from '@/features/skills/hooks'
@@ -47,6 +48,21 @@ export function DashboardPage() {
   const start = useStartProduction()
   const [searchParams, setSearchParams] = useSearchParams()
   const { data: skillList = [] } = useSkills()
+  const { data: modelOptions } = useModelOptions()
+  // The models the user picked. Anything not picked uses the server's default for what it makes.
+  const [picked, setPicked] = useState<Partial<Record<ModelCapability, string>>>({})
+  const selection: Record<ModelCapability, string | null> = {
+    video: picked.video ?? modelOptions?.video.default ?? null,
+    image: picked.image ?? modelOptions?.image.default ?? null,
+    text: picked.text ?? modelOptions?.text.default ?? null,
+  }
+  // A skill decides what is made, so its column is the active one. A thumbnail is an image; a short film is a video.
+  const activeCapability: ModelCapability = skill?.capability ?? 'video'
+  useEffect(() => {
+    if (skill?.capability && skill.default_model) {
+      setPicked((current) => ({ ...current, [skill.capability as ModelCapability]: skill.default_model ?? undefined }))
+    }
+  }, [skill])
   const mode: 'full_video' | 'image' | 'audio' = skill?.mode === 'image' || skill?.mode === 'audio' ? skill.mode : 'full_video'
   const projects = data?.data ?? []
   const firstName = user?.name.split(' ')[0]
@@ -81,7 +97,8 @@ export function DashboardPage() {
     // Each mode opens the thing that makes it. The format is the same everywhere, so the size is never guessed.
     if (mode === 'image') {
       const refParam = reference ? `&ref=${encodeURIComponent(reference.url)}` : ''
-      navigate(`/tools/image?prompt=${encodeURIComponent(text)}&size=${format}${skill ? `&skill=${skill.key}` : ''}${refParam}`)
+      const modelParam = selection.image ? `&model=${encodeURIComponent(selection.image)}` : ''
+      navigate(`/tools/image?prompt=${encodeURIComponent(text)}&size=${format}${skill ? `&skill=${skill.key}` : ''}${refParam}${modelParam}`)
       return
     }
     if (mode === 'audio') {
@@ -90,7 +107,7 @@ export function DashboardPage() {
     }
 
     const production = await start
-      .mutateAsync({ prompt: text, format, quality, skill_key: skill?.key, reference_url: reference?.url })
+      .mutateAsync({ prompt: text, format, quality, skill_key: skill?.key, reference_url: reference?.url, video_model: selection.video ?? undefined })
       .catch((error) => {
         toast.error(apiErrorMessage(error))
         return null
@@ -208,7 +225,11 @@ export function DashboardPage() {
                     <HugeiconsIcon icon={Cancel01Icon} size={12} strokeWidth={2} aria-hidden />
                   </button>
                 )}
-                <ModelMenu />
+                <ModelMenu
+                  active={activeCapability}
+                  selection={selection}
+                  onSelect={(capability, key) => setPicked((current) => ({ ...current, [capability]: key }))}
+                />
                 {mode === 'full_video' && !chat && <QualityMenu value={quality} onChange={setQuality} />}
               </div>
               <div className="flex shrink-0 items-center gap-2">

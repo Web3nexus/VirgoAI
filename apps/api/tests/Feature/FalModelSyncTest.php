@@ -66,7 +66,7 @@ it('registers the selectable endpoints it verified, and nothing else', function 
     $summary = app(FalModelSync::class)->sync();
 
     expect($summary['provider'])->toBe('fal')
-        ->and($summary['upserted'])->toBe(2)
+        ->and($summary['upserted'])->toBe(count(FalEndpoints::selectableIds()))
         ->and($summary['errors'])->toBe([]);
 
     $provider = AiProvider::where('key', 'fal')->firstOrFail();
@@ -121,7 +121,7 @@ it('reports an endpoint that is no longer active', function () {
 
     $summary = app(FalModelSync::class)->sync();
 
-    expect($summary['upserted'])->toBe(1)
+    expect($summary['upserted'])->toBe(count(FalEndpoints::selectableIds()) - 1)
         ->and($summary['errors'][0])->toContain('not active');
 });
 

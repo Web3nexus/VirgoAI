@@ -83,7 +83,7 @@ export function SkillsPage() {
                 <button
                   key={skill.key}
                   type="button"
-                  onClick={() => navigate(`/?skill=${skill.key}`)}
+                  onClick={() => navigate(skill.inputs.length > 0 ? `/quick-start/${skill.key}` : `/?skill=${skill.key}`)}
                   className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card/60 text-left transition-colors hover:border-brand/50"
                 >
                   <div className="relative">
