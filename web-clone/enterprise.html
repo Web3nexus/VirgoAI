@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" class="dark overscroll-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Enterprise Solutions & Custom LoRA — OpenArt</title>
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#fb23c2', hover: '#ed00b5', glow: 'rgba(251, 35, 194, 0.35)' },
+            ink: { 0: '#090a0a', 1: '#121314', 2: '#16181a', 3: '#1b1d1f', 4: '#242729' },
+            accent: { emerald: '#0ae448', lime: '#ccff3e', cyan: '#22d3ee' },
+            slate: { 8: '#625f69', 9: '#6f6d78', 11: '#b5b2bc', 12: '#eeedf0' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-ink-0 text-slate-12 antialiased flex flex-col min-h-screen">
+
+  <!-- TOP HEADER WITH HUGEICONS -->
+  <header class="border-b border-white/10 bg-ink-0/80 backdrop-blur-xl px-6 py-3.5 sticky top-0 z-40 flex items-center justify-between">
+    <div class="flex items-center gap-8">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:scale-105 transition">
+          <i class="hgi-stroke hgi-ai-magic text-lg text-ink-0"></i>
+        </div>
+        <span class="font-heading font-extrabold text-xl tracking-tight text-white">OpenArt</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-11">
+        <a href="home.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition flex items-center gap-1">
+          <i class="hgi-stroke hgi-home-01 text-xs"></i>
+          <span>Studio Suite</span>
+        </a>
+        <a href="pricing.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">Pricing</a>
+        <a href="enterprise.html" class="px-3 py-2 rounded-lg text-white font-semibold">Enterprise</a>
+        <a href="mcp.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">MCP Protocol</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openModal('auth')" class="px-4 py-2 text-xs font-semibold text-white hover:text-brand transition">Sign In</button>
+      <button onclick="alert('Sales inquiry initiated. Our enterprise director will connect shortly.')" class="bg-white hover:bg-slate-12 text-ink-0 px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5">
+        <span>Contact Enterprise Sales</span>
+        <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl mx-auto px-6 py-16 w-full">
+    <div class="bg-ink-1 border border-white/10 rounded-3xl p-8 sm:p-14 mb-16 relative overflow-hidden shadow-2xl">
+      <div class="absolute right-0 top-0 w-96 h-96 bg-brand/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="max-w-xl">
+        <span class="text-xs font-mono text-accent-cyan uppercase tracking-widest font-semibold mb-2 flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-flash text-xs text-accent-cyan"></i>
+          Dedicated Infrastructure
+        </span>
+        <h1 class="font-heading font-extrabold text-4xl sm:text-5xl text-white mb-4">Enterprise AI Generation at Scale</h1>
+        <p class="text-slate-11 text-sm leading-relaxed mb-8">Deploy private fine-tuned brand models, enterprise Single Sign-On (SAML/Okta), SOC2 Type II security compliance, and dedicated high-throughput GPU clusters.</p>
+        <div class="flex flex-wrap gap-4">
+          <button onclick="openModal('auth')" class="bg-brand hover:bg-brand-hover text-white px-6 py-3 rounded-xl font-bold text-xs transition shadow-lg shadow-brand/20 flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-sparkles text-xs"></i>
+            <span>Book Technical Demo</span>
+          </button>
+          <a href="pricing.html" class="px-6 py-3 rounded-xl border border-white/15 text-white hover:bg-white/5 font-semibold text-xs transition flex items-center gap-1">
+            <span>Compare Self-Serve Plans</span>
+            <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security & Guarantees with Hugeicons -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+      <div class="p-6 rounded-2xl bg-ink-1 border border-white/10">
+        <div class="w-10 h-10 rounded-xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan mb-3">
+          <i class="hgi-stroke hgi-globe-02 text-xl"></i>
+        </div>
+        <h3 class="font-bold text-white text-base mb-2">Private Tenant Isolation</h3>
+        <p class="text-xs text-slate-11 leading-relaxed">Zero training on customer prompt inputs or visual outputs. Strict HIPAA and SOC2 Type II compliance guarantees.</p>
+      </div>
+      <div class="p-6 rounded-2xl bg-ink-1 border border-white/10">
+        <div class="w-10 h-10 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand mb-3">
+          <i class="hgi-stroke hgi-flash text-xl"></i>
+        </div>
+        <h3 class="font-bold text-white text-base mb-2">Reserved GPU Instances</h3>
+        <p class="text-xs text-slate-11 leading-relaxed">Dedicated H100 GPU clusters ensuring deterministic sub-2 second latencies during high-traffic ad campaigns.</p>
+      </div>
+      <div class="p-6 rounded-2xl bg-ink-1 border border-white/10">
+        <div class="w-10 h-10 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald mb-3">
+          <i class="hgi-stroke hgi-ai-paintbrush text-xl"></i>
+        </div>
+        <h3 class="font-bold text-white text-base mb-2">Proprietary Brand LoRA</h3>
+        <p class="text-xs text-slate-11 leading-relaxed">Custom weights trained exclusively on your corporate guidelines, packaging designs, and character mascots.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mandatory Deerflow Signature -->
+  <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer" class="deerflow-signature" title="Created by Deerflow">
+    <span class="deerflow-sparkle">✦</span>
+    <span>Created By Deerflow</span>
+  </a>
+
+  <!-- Modals & Scripts -->
+  <script src="js/modals.js"></script>
+</body>
+</html>

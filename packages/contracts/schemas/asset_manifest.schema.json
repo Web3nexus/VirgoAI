@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/asset_manifest.v1",
+  "title": "AssetManifest",
+  "type": "object",
+  "required": ["version", "assets"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["asset_id", "kind", "path", "provider_key", "model_id", "cost_usd", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "asset_id": { "type": "string", "minLength": 1 },
+          "kind": {
+            "enum": ["reference_image", "keyframe", "motion_clip", "lip_synced_clip",
+                     "narration_audio", "dialogue_audio", "score", "thumbnail_base"]
+          },
+          "scene_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "character_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "path": { "type": "string", "minLength": 1 },
+          "provider_key": { "type": "string", "minLength": 1 },
+          "model_id": { "type": "string", "minLength": 1 },
+          "duration_seconds": { "type": "number", "minimum": 0 },
+          "cost_usd": { "type": "number", "minimum": 0 },
+          "status": { "enum": ["pending", "generated", "approved", "rejected", "failed"] }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/environment_design.v1",
+  "title": "EnvironmentDesign",
+  "type": "object",
+  "required": ["version", "environments"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "environments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["environment_id", "name", "prompt", "lighting", "time_of_day", "palette", "reference_image"],
+        "additionalProperties": false,
+        "properties": {
+          "environment_id": { "$ref": "#/$defs/id" },
+          "name": { "type": "string", "minLength": 1 },
+          "prompt": { "type": "string", "minLength": 40 },
+          "lighting": { "type": "string", "minLength": 1 },
+          "time_of_day": { "type": "string", "minLength": 1 },
+          "palette": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" } },
+          "reference_image": {
+            "type": "object",
+            "required": ["asset_id", "status"],
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": { "type": "string", "minLength": 1 },
+              "status": { "enum": ["pending", "approved", "rejected"] }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+  }
+}

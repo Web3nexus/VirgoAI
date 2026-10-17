@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/proposal_packet.v1",
+  "title": "ProposalPacket",
+  "type": "object",
+  "required": ["version", "concepts", "selected_concept_id", "audio_mode", "cost_estimate", "approval"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "concepts": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["concept_id", "title", "hook", "structure", "audience", "duration_seconds"],
+        "additionalProperties": false,
+        "properties": {
+          "concept_id": { "$ref": "#/$defs/id" },
+          "title": { "type": "string", "minLength": 1 },
+          "hook": { "type": "string", "minLength": 1 },
+          "structure": { "type": "string", "minLength": 1 },
+          "audience": { "type": "string", "minLength": 1 },
+          "duration_seconds": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    },
+    "selected_concept_id": { "$ref": "#/$defs/id" },
+    "audio_mode": { "enum": ["narration", "dialogue", "both"] },
+    "cost_estimate": {
+      "type": "object",
+      "required": ["currency", "total_usd", "line_items"],
+      "additionalProperties": false,
+      "properties": {
+        "currency": { "const": "USD" },
+        "total_usd": { "type": "number", "minimum": 0 },
+        "line_items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["stage", "capability", "unit_count", "unit_cost_usd", "subtotal_usd"],
+            "additionalProperties": false,
+            "properties": {
+              "stage": { "type": "string" },
+              "capability": { "type": "string" },
+              "tool": { "type": "string" },
+              "unit_count": { "type": "number", "minimum": 0 },
+              "unit_cost_usd": { "type": "number", "minimum": 0 },
+              "subtotal_usd": { "type": "number", "minimum": 0 }
+            }
+          }
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "enum": ["pending", "approved", "approved_with_changes", "rejected"] },
+        "notes": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+  }
+}

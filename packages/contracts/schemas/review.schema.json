@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/review.v1",
+  "title": "Review",
+  "description": "Reviewer output for one stage. Enforces the CHAI critique rules: a critical finding must carry a proposed_fix.",
+  "type": "object",
+  "required": ["version", "stage", "findings", "decision"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "stage": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+    "decision": { "enum": ["accept", "revise", "block"] },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["severity", "target", "summary"],
+        "additionalProperties": false,
+        "properties": {
+          "severity": { "enum": ["critical", "suggestion", "nitpick", "investigation"] },
+          "target": { "type": "string", "minLength": 1, "description": "Artifact field, scene_id, asset_id, or line_id the finding points at." },
+          "summary": { "type": "string", "minLength": 1 },
+          "proposed_fix": { "type": "string", "minLength": 1 },
+          "proposed_change": { "type": "string", "minLength": 1 }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "severity": { "const": "critical" } }, "required": ["severity"] },
+            "then": { "required": ["proposed_fix"], "properties": { "proposed_fix": { "type": "string", "minLength": 1 } } }
+          },
+          {
+            "if": { "properties": { "severity": { "const": "suggestion" } }, "required": ["severity"] },
+            "then": { "required": ["proposed_change"], "properties": { "proposed_change": { "type": "string", "minLength": 1 } } }
+          }
+        ]
+      }
+    }
+  },
+  "if": { "properties": { "decision": { "const": "accept" } }, "required": ["decision"] },
+  "then": {
+    "properties": {
+      "findings": {
+        "type": "array",
+        "not": { "contains": { "type": "object", "properties": { "severity": { "const": "critical" } }, "required": ["severity"] } }
+      }
+    }
+  }
+}

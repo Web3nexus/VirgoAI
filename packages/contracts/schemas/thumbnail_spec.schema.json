@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/thumbnail_spec.v1",
+  "title": "ThumbnailSpec",
+  "type": "object",
+  "required": ["version", "concept", "overlay_text", "prompt", "character_ids", "size"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "concept": { "type": "string", "minLength": 1 },
+    "overlay_text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "description": "Four words or fewer, checked again by the validator."
+    },
+    "prompt": { "type": "string", "minLength": 20 },
+    "character_ids": { "type": "array", "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }, "uniqueItems": true },
+    "size": {
+      "type": "object",
+      "required": ["width", "height"],
+      "additionalProperties": false,
+      "properties": {
+        "width": { "type": "integer", "minimum": 16 },
+        "height": { "type": "integer", "minimum": 16 }
+      }
+    }
+  }
+}

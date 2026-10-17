@@ -1,0 +1,265 @@
+# virgoAi pipeline manifest — generative-video (DEC-0008)
+#
+# One input → characters, environments, scenes → generated keyframes → motion clips →
+# narrated, edited, rendered video → generated thumbnail.
+#
+# Read by the workflow engine (DEC-0005). Stage behaviour lives in skills and handlers,
+# not in this file. Capabilities refer to DEC-0006 adapter capabilities.
+#
+# Field meanings:
+#   after          stage dependencies (other stage names). Must form an acyclic graph.
+#   after_optional stage dependencies that are used if the stage ran, but not required.
+#   produces       artifacts this stage writes. Each must have a schema in packages/contracts/schemas.
+#   gate           true means the engine refuses to mark the stage completed until an approval is recorded.
+#
+# Validate with: npm run validate:manifests (packages/contracts). CI fails on any error.
+
+name: generative-video
+version: "0.2.0"
+status: draft
+description: >
+  Generative video production: prompt-driven characters and environments, scene keyframes
+  generated from those references, image-to-video motion, narration or dialogue, lip-sync for
+  speaking shots, edit, render, and a generated thumbnail.
+
+inputs:
+  accepts: [youtube_url, transcript, upload, script, idea]
+
+# User-facing settings. Chosen at intake, reviewable at the proposal gate.
+settings:
+  audio_mode:
+    values: [narration, dialogue, both]
+    default: narration
+    # narration: one narrator voice over the whole video
+    # dialogue:  characters speak their own lines; each character has its own voice
+    # both:      narrator voice plus character dialogue
+    changes_stages:
+      narration: [audio.generate_narration]
+      dialogue: [character_design.assign_voices, audio.generate_dialogue, lip_sync]
+      both: [character_design.assign_voices, audio.generate_narration, audio.generate_dialogue, lip_sync]
+
+default_automation_mode: guided   # guided | assisted | full_handoff (build brief §6.2)
+
+budget:
+  default_usd: 20.00
+  reserve_pct: 0.10
+  single_action_approval_usd: 2.00   # any single paid batch above this needs approval
+
+stages:
+
+  - name: intake
+    produces: [brief]
+    after: []
+    capabilities: [text]
+    gate: false
+    review_focus:
+      - Brief states audience, duration, platform, and tone
+    success_criteria:
+      - Schema-valid brief
+
+  - name: research
+    produces: [research_brief]
+    after: [intake]
+    capabilities: [text]
+    optional_for_inputs: [idea]        # skipped for URL/transcript inputs that already carry facts
+    gate: false
+    review_focus:
+      - Data points are specific and sourced, with a URL for each
+      - Facts that come from the input are marked as such, not re-sourced
+    success_criteria:
+      - At least 3 sourced data points, or an explicit no_research_needed flag
+
+  - name: proposal
+    produces: [proposal_packet]
+    after: [intake, research]
+    capabilities: [text]
+    gate: true
+    review_focus:
+      - At least 3 concepts that differ in structure, hook, and audience
+      - Itemized cost estimate per stage, including image and video calls
+      - Required capabilities are configured, or the gap is named
+    success_criteria:
+      - Schema-valid proposal_packet with a selected concept
+      - Cost estimate is itemized
+
+  - name: script
+    produces: [script]
+    after: [proposal]
+    capabilities: [text]
+    gate: true
+    review_focus:
+      - Word count within 10% of the target duration
+      - Narrative arc hook → setup → build → climax → landing
+      - Each section names the characters and environments it uses by ID
+      - "dialogue/both only: every line has a speaker ID that exists in the cast"
+    success_criteria:
+      - Schema-valid script; duration within 10% of target
+      - "narration: one narrator track per section; dialogue/both: lines carry speaker, text, and timing"
+
+  - name: character_design
+    produces: [character_design]
+    after: [script]
+    capabilities: [text, image]
+    gate: true
+    steps:
+      - write_character_prompts        # text: one prompt per character, identity locked in text
+      - generate_reference_images      # image: front/3-4 views, neutral background
+      - assign_voices                  # dialogue/both only: one open-source voice per character
+    review_focus:
+      - Each character has a stable identity block reused verbatim in every prompt
+      - Reference images match the prompt (age, wardrobe, palette, proportions)
+      - "dialogue/both only: each character has a distinct voice that fits its age and role"
+    success_criteria:
+      - Schema-valid character_design with one approved reference image per character
+      - "dialogue/both only: every character has a voice_id from the voice registry"
+
+  - name: environment_design
+    produces: [environment_design]
+    after: [script]
+    capabilities: [text, image]
+    gate: true
+    steps:
+      - write_environment_prompts
+      - generate_environment_plates    # wide establishing frames per location
+    review_focus:
+      - Lighting, time of day, and palette are stated and consistent across locations
+    success_criteria:
+      - Schema-valid environment_design with one approved plate per location
+
+  - name: scene_plan
+    produces: [scene_plan]
+    after: [script, character_design, environment_design]
+    capabilities: [text]
+    gate: true
+    review_focus:
+      - Every scene references only approved character and environment IDs
+      - Shot list covers the script; durations match the script timing
+      - Each scene has a keyframe prompt and a motion prompt
+    success_criteria:
+      - Schema-valid scene_plan; all referenced IDs exist and are approved
+
+  - name: keyframes
+    produces: [asset_manifest]          # draft stored in metadata.partial_progress until complete
+    after: [scene_plan, character_design, environment_design]
+    capabilities: [image]
+    constraints:
+      reference_images: required        # route only to models that accept reference images
+    gate: true                          # storyboard gate: approve stills BEFORE any motion render
+    steps:
+      - generate_scene_keyframes        # one still per scene, with character + environment refs
+    review_focus:
+      - Each character matches its approved reference in every keyframe
+      - Scene composition matches the shot list
+    success_criteria:
+      - One approved keyframe per scene
+      - Projected motion cost shown at the gate
+
+  - name: motion
+    produces: [asset_manifest]
+    after: [keyframes]
+    capabilities: [image_to_video]
+    constraints:
+      input: approved_keyframe          # motion starts only from approved stills
+    gate: false                         # already approved at keyframes; cap enforced per batch
+    steps:
+      - generate_scene_motion           # one clip per scene, checkpoint after each clip
+    review_focus:
+      - Motion keeps the character and environment from the approved keyframe
+      - No clip contains a visible cut, morph, or identity change the scene plan does not call for
+    success_criteria:
+      - One clip per scene with duration within 1 second of the scene plan
+
+  - name: audio
+    produces: [asset_manifest]
+    after: [script, character_design]
+    capabilities: [tts, music]
+    constraints:
+      dialogue_tts: multi_speaker        # route only to voice models that hold per-speaker voices
+    gate: false
+    steps:
+      - generate_narration               # when audio_mode is narration or both
+      - generate_dialogue                # when audio_mode is dialogue or both; one call per line, voice from cast
+      - generate_score
+    review_focus:
+      - Dialogue lines are not clipped; no two speakers overlap unless the script says so
+      - Narration and dialogue levels are balanced (dialogue stays intelligible over score)
+    success_criteria:
+      - Narration duration matches the script timing within 5%
+      - "dialogue/both only: every line has an audio file whose speaker matches the cast"
+
+  - name: lip_sync
+    produces: [asset_manifest]
+    after: [motion, audio, scene_plan]
+    capabilities: [lip_sync]
+    when: audio_mode in [dialogue, both]
+    constraints:
+      input: shots_with_visible_speaker  # only scenes where a character with a face speaks on screen
+      audio: per_speaker_dialogue_track  # the speaker's own line audio, not the mixed track
+    gate: false
+    steps:
+      - sync_speaking_shots              # one call per speaking shot, using that character's approved reference
+    review_focus:
+      - Mouth movement starts and stops with the audio, with no visible drift
+      - Face identity and framing stay unchanged compared with the motion clip
+      - Shots with no visible speaker are skipped, not forced through lip-sync
+    success_criteria:
+      - Every speaking shot with a visible face has a synced clip, or an explicit skip reason
+
+  - name: edit
+    produces: [edit_decisions]
+    after: [motion, audio, scene_plan]
+    after_optional: [lip_sync]
+    capabilities: [text]
+    gate: false
+    review_focus:
+      - Cuts land on narration beats; no clip shown longer than its source
+    success_criteria:
+      - Schema-valid edit_decisions covering every scene
+
+  - name: compose
+    produces: [render_report]
+    after: [edit]
+    capabilities: [render]
+    gate: false
+    steps:
+      - render_composition              # Remotion for scene graphics and captions; FFmpeg for mux and encode
+    review_focus:
+      - Render runtime matches the one locked at proposal; no silent engine swap
+      - Output resolution, fps, and duration match edit_decisions
+    success_criteria:
+      - Final MP4 exists; duration and resolution match the proposal
+
+  - name: final_review
+    produces: [review]
+    after: [compose]
+    capabilities: [text, render]
+    gate: true
+    review_focus:
+      - Frame-level check of key moments; audio levels; captions sync
+    success_criteria:
+      - Reviewer findings resolved or accepted
+
+  - name: thumbnail
+    produces: [thumbnail_spec, asset_manifest]
+    after: [final_review, script]
+    capabilities: [text, image, render]
+    gate: true
+    steps:
+      - write_thumbnail_spec            # text: concept, overlay text, composition, prompt
+      - generate_thumbnail_base         # image: base art, reference-locked to the characters
+      - compose_thumbnail_overlay       # render: text and brand layer
+    review_focus:
+      - Readable at phone size; text is four words or fewer; matches the final video
+    success_criteria:
+      - Approved thumbnail at the platform's required size
+
+  - name: publish
+    produces: [publish_log]
+    after: [final_review, thumbnail]
+    capabilities: []
+    gate: true
+    review_focus:
+      - Every target platform has the approved title, description, and thumbnail
+      - Scheduled times do not overlap on the same platform
+    success_criteria:
+      - Publish log entry for every target platform

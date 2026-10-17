@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en" class="dark overscroll-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>OpenArt Suite Home — AI Creator Studio for Video & Images</title>
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#fb23c2', hover: '#ed00b5', glow: 'rgba(251, 35, 194, 0.35)' },
+            ink: { 0: '#090a0a', 1: '#121314', 2: '#16181a', 3: '#1b1d1f', 4: '#242729' },
+            accent: { emerald: '#0ae448', lime: '#ccff3e', cyan: '#22d3ee' },
+            slate: { 8: '#625f69', 9: '#6f6d78', 11: '#b5b2bc', 12: '#eeedf0' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-ink-0 text-slate-12 antialiased flex flex-col h-screen overflow-hidden">
+
+  <!-- SUITE STUDIO CONTAINER: SIDEBAR + MAIN WORKSPACE -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- AUTHENTIC OPENART SUITE SIDEBAR (232px) WITH HUGEICONS -->
+    <aside class="w-[232px] bg-ink-1 border-r border-white/10 flex flex-col shrink-0 select-none overflow-hidden my-2.5 ml-2.5 rounded-2xl shadow-2xl">
+      <!-- Top Brand Header -->
+      <div class="p-3 pb-2 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-ink-0 shadow-md">
+            <i class="hgi-stroke hgi-ai-magic text-base text-ink-0"></i>
+          </div>
+          <span class="font-heading font-extrabold text-white text-base tracking-tight">OpenArt</span>
+        </a>
+        <button onclick="alert('Sidebar collapsed/expanded')" class="text-slate-8 hover:text-white p-1 rounded-lg">
+          <i class="hgi-stroke hgi-menu-02 text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Navigation Tree -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-4 text-xs font-medium">
+        <!-- Home Link (Active) -->
+        <a href="home.html" class="flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg bg-white/10 text-white font-semibold shadow-inner border border-white/10">
+          <i class="hgi-stroke hgi-home-01 text-brand text-sm"></i>
+          <span>Home</span>
+        </a>
+
+        <!-- Accordion 1: AGENTS -->
+        <div>
+          <div class="text-[10px] font-mono uppercase text-slate-8 px-2 py-1 flex items-center justify-between">
+            <span>Agents</span>
+          </div>
+          <div class="space-y-0.5 mt-1">
+            <a href="javascript:void(0)" onclick="alert('Chat Mode: Conversational AI Creative Director')" class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-bubble-chat-user text-sm text-slate-11"></i>
+              <div>
+                <span class="block leading-none">Chat Mode</span>
+                <span class="text-[9px] text-slate-9">Chat to create anything</span>
+              </div>
+            </a>
+            <a href="director.html" class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-camera-video text-sm text-slate-11"></i>
+              <div>
+                <span class="block leading-none">Director Mode</span>
+                <span class="text-[9px] text-slate-9">Full film / long video</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Accordion 2: TOOLS -->
+        <div>
+          <div class="text-[10px] font-mono uppercase text-slate-8 px-2 py-1 flex items-center justify-between">
+            <span>Tools</span>
+          </div>
+          <div class="grid grid-cols-2 gap-1 mt-1">
+            <a href="create-video.html" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-ai-video-01 text-sm text-accent-cyan"></i>
+              <span>Video</span>
+            </a>
+            <a href="create-image.html" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-ai-image-01 text-sm text-brand"></i>
+              <span>Image</span>
+            </a>
+            <a href="world.html" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-globe-02 text-sm text-indigo-400"></i>
+              <span>World</span>
+            </a>
+            <a href="character.html" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-ai-user text-sm text-accent-lime"></i>
+              <span>Character</span>
+            </a>
+            <a href="javascript:void(0)" onclick="alert('Audio / Voiceover Lab')" class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-ai-voice-01 text-sm text-yellow-400"></i>
+              <span>Audio</span>
+            </a>
+            <a href="mcp.html" class="flex items-center justify-between px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <span class="flex items-center gap-1">
+                <i class="hgi-stroke hgi-flash text-sm text-accent-lime"></i>
+                <span>MCP</span>
+              </span>
+              <span class="text-[8px] bg-accent-lime text-ink-0 font-bold px-1 rounded">10% Off</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Accordion 3: ASSETS -->
+        <div>
+          <div class="text-[10px] font-mono uppercase text-slate-8 px-2 py-1">Assets</div>
+          <div class="space-y-0.5 mt-1">
+            <a href="assets.html" class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-folder-01 text-sm"></i>
+              <span>Director Projects</span>
+            </a>
+            <a href="character.html" class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-mask-theater-01 text-sm"></i>
+              <span>Characters & Worlds</span>
+            </a>
+            <a href="assets.html" class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-image-01 text-sm"></i>
+              <span>Media Vault</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Accordion 4: PINNED VIDEO LAB -->
+        <div>
+          <div class="text-[10px] font-mono uppercase text-slate-8 px-2 py-1">Video Lab & VFX</div>
+          <div class="space-y-0.5 mt-1">
+            <a href="motion-sync.html" class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-flash text-sm text-yellow-400"></i>
+              <span>Motion Sync</span>
+            </a>
+            <a href="javascript:void(0)" onclick="alert('Lip Sync: Synchronize character lips to audio track')" class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-ai-voice-01 text-sm text-accent-cyan"></i>
+              <span>Lip Sync</span>
+            </a>
+            <a href="javascript:void(0)" onclick="alert('Relight Video: Change ambient and dramatic lighting')" class="flex items-center gap-2 px-2 py-1.5 rounded-lg text-slate-11 hover:text-white hover:bg-white/5 transition">
+              <i class="hgi-stroke hgi-sun-02 text-sm text-amber-300"></i>
+              <span>Relight Video</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Credits & Account -->
+      <div class="p-3 border-t border-white/10 bg-ink-2/50">
+        <div class="flex items-center justify-between mb-1.5 text-xs font-semibold">
+          <span class="text-white flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-diamond-01 text-accent-emerald text-sm"></i>
+            Credits
+          </span>
+          <span class="text-brand credit-balance-display">50 Credits</span>
+        </div>
+        <button onclick="openModal('credits')" class="w-full py-1.5 rounded-lg bg-brand/20 hover:bg-brand/30 border border-brand/30 text-brand text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <i class="hgi-stroke hgi-sparkles text-xs"></i>
+          <span>Upgrade Plan</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <!-- Top Workspace Header -->
+      <header class="h-14 border-b border-white/10 px-6 flex items-center justify-between shrink-0 bg-ink-0/60 backdrop-blur-md">
+        <!-- Global Search Bar with Hugeicons -->
+        <div class="flex items-center gap-2 w-96 bg-ink-1 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-slate-11">
+          <i class="hgi-stroke hgi-search-01 text-sm text-slate-9"></i>
+          <input type="text" placeholder="Search models, projects, or prompts..." class="bg-transparent outline-none text-white w-full placeholder-slate-9 font-sans">
+          <kbd class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[10px]">⌘K</kbd>
+        </div>
+
+        <!-- Right Suite Controls with Hugeicons -->
+        <div class="flex items-center gap-4 text-xs font-semibold">
+          <button onclick="openModal('credits')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-ink-2 border border-white/10 text-white hover:bg-ink-3 transition">
+            <i class="hgi-stroke hgi-diamond-01 text-accent-emerald text-sm"></i>
+            <span class="credit-balance-display">50 Credits</span>
+            <span class="text-brand ml-1 font-bold">+ Top Up</span>
+          </button>
+          <a href="pricing.html" class="px-3.5 py-1.5 rounded-xl bg-brand text-white font-bold hover:bg-brand-hover transition shadow-lg shadow-brand/20 flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-sparkles text-xs"></i>
+            <span>Upgrade Now</span>
+          </a>
+          <button onclick="openModal('auth')" class="w-8 h-8 rounded-full bg-ink-2 border border-white/15 flex items-center justify-center text-slate-11 hover:text-white transition">
+            <i class="hgi-stroke hgi-user text-sm"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Suite Home Content -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar p-8 space-y-10">
+
+        <!-- Section 1: "What are we making today?" -->
+        <div class="max-w-4xl mx-auto text-center space-y-4">
+          <h1 class="font-heading font-extrabold text-3xl sm:text-4xl text-white">What are we making today?</h1>
+          
+          <div class="bg-ink-1 border border-white/15 p-2 rounded-2xl shadow-2xl flex items-center gap-2">
+            <input id="suite-home-prompt" type="text" placeholder="Describe anything you want to create or ask our creative agent..." class="flex-1 bg-transparent border-0 outline-none px-4 py-2 text-sm text-white placeholder-slate-9 font-sans">
+            <button onclick="window.location.href='create-image.html?prompt=' + encodeURIComponent(document.getElementById('suite-home-prompt').value)" class="bg-brand hover:bg-brand-hover text-white px-5 py-2.5 rounded-xl font-bold text-xs transition flex items-center gap-1.5 shrink-0 shadow-lg shadow-brand/25">
+              <span>Create</span>
+              <i class="hgi-stroke hgi-arrow-right-01 text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Suggested Starter Pills with Hugeicons -->
+          <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
+            <span class="text-slate-9 font-mono text-[10px]">SUGGESTIONS:</span>
+            <button onclick="document.getElementById('suite-home-prompt').value='Product commercial ad for luxury watch with cinematic liquid chrome ripples'" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/40 text-slate-11 hover:text-white transition flex items-center gap-1.5">
+              <i class="hgi-stroke hgi-sparkles text-xs text-brand"></i>
+              <span>Create product ads</span>
+            </button>
+            <button onclick="document.getElementById('suite-home-prompt').value='Sci-fi cyber thriller film poster with intense typographic composition'" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/40 text-slate-11 hover:text-white transition flex items-center gap-1.5">
+              <i class="hgi-stroke hgi-camera-video text-xs text-accent-cyan"></i>
+              <span>Design a film poster</span>
+            </button>
+            <button onclick="document.getElementById('suite-home-prompt').value='Deep synthwave atmospheric background music for cyberpunk cityscape'" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/40 text-slate-11 hover:text-white transition flex items-center gap-1.5">
+              <i class="hgi-stroke hgi-music-01 text-xs text-accent-emerald"></i>
+              <span>Music for my film</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: "Direct Your Video" Presets with Hugeicons -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="font-heading font-bold text-xl text-white">Direct Your Video</h2>
+              <p class="text-xs text-slate-11">Choose a production template to jumpstart your video</p>
+            </div>
+            <a href="director.html" class="text-xs text-brand hover:underline font-semibold flex items-center gap-1">
+              <span>View All Storyboards</span>
+              <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            <a href="director.html?preset=short-film" class="p-3.5 rounded-xl bg-ink-1 border border-white/10 hover:border-brand/50 transition group flex flex-col justify-between aspect-square">
+              <i class="hgi-stroke hgi-camera-video text-2xl text-brand group-hover:scale-110 transition"></i>
+              <div>
+                <span class="font-bold text-xs text-white block">Short Film</span>
+                <span class="text-[10px] text-slate-9">Multi-scene stories</span>
+              </div>
+            </a>
+            <a href="director.html?preset=music-video" class="p-3.5 rounded-xl bg-ink-1 border border-white/10 hover:border-brand/50 transition group flex flex-col justify-between aspect-square relative">
+              <span class="absolute top-2 right-2 bg-brand text-white text-[8px] font-bold px-1.5 py-0.2 rounded">New</span>
+              <i class="hgi-stroke hgi-music-01 text-2xl text-accent-cyan group-hover:scale-110 transition"></i>
+              <div>
+                <span class="font-bold text-xs text-white block">Music Video</span>
+                <span class="text-[10px] text-slate-9">Synced audio beats</span>
+              </div>
+            </a>
+            <a href="director.html?preset=product-ads" class="p-3.5 rounded-xl bg-ink-1 border border-white/10 hover:border-brand/50 transition group flex flex-col justify-between aspect-square">
+              <i class="hgi-stroke hgi-shopping-bag-01 text-2xl text-accent-emerald group-hover:scale-110 transition"></i>
+              <div>
+                <span class="font-bold text-xs text-white block">Product Ads</span>
+                <span class="text-[10px] text-slate-9">High conversion spots</span>
+              </div>
+            </a>
+            <a href="director.html?preset=ugc-ads" class="p-3.5 rounded-xl bg-ink-1 border border-white/10 hover:border-brand/50 transition group flex flex-col justify-between aspect-square">
+              <i class="hgi-stroke hgi-smart-phone-01 text-2xl text-accent-lime group-hover:scale-110 transition"></i>
+              <div>
+                <span class="font-bold text-xs text-white block">UGC Ads</span>
+                <span class="text-[10px] text-slate-9">Authentic creator reel</span>
+              </div>
+            </a>
+            <a href="director.html?preset=micro-drama" class="p-3.5 rounded-xl bg-ink-1 border border-white/10 hover:border-brand/50 transition group flex flex-col justify-between aspect-square">
+              <i class="hgi-stroke hgi-drama text-2xl text-pink-400 group-hover:scale-110 transition"></i>
+              <div>
+                <span class="font-bold text-xs text-white block">Micro Drama</span>
+                <span class="text-[10px] text-slate-9">Episodic short series</span>
+              </div>
+            </a>
+            <a href="director.html?preset=film-trailer" class="p-3.5 rounded-xl bg-ink-1 border border-white/10 hover:border-brand/50 transition group flex flex-col justify-between aspect-square">
+              <i class="hgi-stroke hgi-clapperboard text-2xl text-amber-400 group-hover:scale-110 transition"></i>
+              <div>
+                <span class="font-bold text-xs text-white block">Film Trailer</span>
+                <span class="text-[10px] text-slate-9">Cinematic teaser cuts</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Section 3: "What's New?" Announcement Banner -->
+        <div class="bg-gradient-to-r from-brand/20 via-ink-1 to-accent-cyan/15 border border-white/10 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div>
+            <span class="bg-accent-emerald text-ink-0 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider mb-2 inline-flex items-center gap-1">
+              <i class="hgi-stroke hgi-sparkles text-[10px]"></i>
+              Release 2.5
+            </span>
+            <h3 class="font-heading font-extrabold text-2xl text-white mb-1">BytePlus Seedance 2.5 & Google Veo 3 Live</h3>
+            <p class="text-xs text-slate-11 max-w-xl">Render fluid human anatomy and high-speed sports motion with our newly benchmarked video generation models.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openModal('model-selector')" class="px-4 py-2 rounded-xl bg-white text-ink-0 font-bold text-xs hover:bg-slate-12 transition">Explore Models</button>
+            <a href="create-video.html" class="px-4 py-2 rounded-xl bg-brand text-white font-bold text-xs hover:bg-brand-hover transition flex items-center gap-1.5">
+              <span>Try Veo 3</span>
+              <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Section 4: "Get Started with Tools" with Hugeicons -->
+        <div>
+          <h2 class="font-heading font-bold text-xl text-white mb-4">Core Creative Workspaces</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <a href="create-image.html" class="p-5 rounded-2xl bg-ink-1 border border-white/10 hover:border-brand transition group flex flex-col">
+              <div class="w-12 h-12 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand mb-4 group-hover:scale-105 transition">
+                <i class="hgi-stroke hgi-ai-image-01 text-2xl"></i>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">AI Image Generator</h3>
+              <p class="text-xs text-slate-11 mb-4 leading-relaxed">Turn natural language prompts into photorealistic artworks, product renders, and concept sheets.</p>
+              <span class="mt-auto text-brand text-xs font-semibold flex items-center gap-1">
+                <span>Launch Image Studio</span>
+                <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+              </span>
+            </a>
+
+            <a href="create-video.html" class="p-5 rounded-2xl bg-ink-1 border border-white/10 hover:border-accent-cyan transition group flex flex-col">
+              <div class="w-12 h-12 rounded-xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan mb-4 group-hover:scale-105 transition">
+                <i class="hgi-stroke hgi-ai-video-01 text-2xl"></i>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">AI Video Generator</h3>
+              <p class="text-xs text-slate-11 mb-4 leading-relaxed">Apply cinematic motion to any still image or generate full 1080p clips with custom camera orbits.</p>
+              <span class="mt-auto text-accent-cyan text-xs font-semibold flex items-center gap-1">
+                <span>Launch Video Studio</span>
+                <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+              </span>
+            </a>
+
+            <a href="character.html" class="p-5 rounded-2xl bg-ink-1 border border-white/10 hover:border-accent-lime transition group flex flex-col">
+              <div class="w-12 h-12 rounded-xl bg-accent-lime/10 border border-accent-lime/20 flex items-center justify-center text-accent-lime mb-4 group-hover:scale-105 transition">
+                <i class="hgi-stroke hgi-ai-user text-2xl"></i>
+              </div>
+              <h3 class="font-bold text-white text-base mb-1">Character Consistency</h3>
+              <p class="text-xs text-slate-11 mb-4 leading-relaxed">Generate identical facial structures across different clothing, lighting conditions, and camera angles.</p>
+              <span class="mt-auto text-accent-lime text-xs font-semibold flex items-center gap-1">
+                <span>Launch Character Builder</span>
+                <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+              </span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Mandatory Deerflow Signature -->
+  <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer" class="deerflow-signature" title="Created by Deerflow">
+    <span class="deerflow-sparkle">✦</span>
+    <span>Created By Deerflow</span>
+  </a>
+
+  <!-- Modals & Scripts -->
+  <script src="js/modals.js"></script>
+</body>
+</html>

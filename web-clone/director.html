@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" class="dark overscroll-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Director Mode & Storyboard — OpenArt Suite</title>
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#fb23c2', hover: '#ed00b5', glow: 'rgba(251, 35, 194, 0.35)' },
+            ink: { 0: '#090a0a', 1: '#121314', 2: '#16181a', 3: '#1b1d1f', 4: '#242729' },
+            accent: { emerald: '#0ae448', lime: '#ccff3e', cyan: '#22d3ee' },
+            slate: { 8: '#625f69', 9: '#6f6d78', 11: '#b5b2bc', 12: '#eeedf0' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-ink-0 text-slate-12 antialiased flex flex-col h-screen overflow-hidden">
+
+  <!-- TOP HEADER WITH HUGEICONS -->
+  <header class="h-14 border-b border-white/10 px-4 flex items-center justify-between shrink-0 bg-ink-1">
+    <div class="flex items-center gap-4">
+      <a href="home.html" class="flex items-center gap-2 group">
+        <div class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-ink-0 shadow-md">
+          <i class="hgi-stroke hgi-ai-magic text-base text-ink-0"></i>
+        </div>
+        <span class="font-heading font-extrabold text-white text-base tracking-tight">OpenArt Director</span>
+      </a>
+      <span class="text-slate-8">/</span>
+      <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+        <i class="hgi-stroke hgi-camera-video text-brand text-sm"></i>
+        Film Sequence Storyboard
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3 text-xs font-semibold">
+      <a href="home.html" class="text-slate-11 hover:text-white px-2 py-1 flex items-center gap-1">
+        <i class="hgi-stroke hgi-home-01 text-xs"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="create-video.html" class="text-slate-11 hover:text-white px-2 py-1 flex items-center gap-1">
+        <i class="hgi-stroke hgi-ai-video-01 text-xs"></i>
+        <span>Video Studio</span>
+      </a>
+      <a href="character.html" class="text-slate-11 hover:text-white px-2 py-1 flex items-center gap-1">
+        <i class="hgi-stroke hgi-ai-user text-xs"></i>
+        <span>Character Builder</span>
+      </a>
+      <button onclick="openModal('export')" class="bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl font-bold transition shadow-lg shadow-brand/20 flex items-center gap-1.5">
+        <i class="hgi-stroke hgi-clapperboard text-xs"></i>
+        <span>Render Film Sequence</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- DIRECTOR STORYBOARD TIMELINE -->
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-6 max-w-7xl mx-auto w-full">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="font-heading font-extrabold text-2xl text-white">Project: "Neon Odyssey" (Film Timeline)</h1>
+        <p class="text-xs text-slate-11">Total Duration: 00:12 &bull; 3 Consecutive Shots with Facial Continuity Lock</p>
+      </div>
+      <button onclick="addSceneAction()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition flex items-center gap-1.5">
+        <i class="hgi-stroke hgi-sparkles text-xs text-brand"></i>
+        <span>Add Scene</span>
+      </button>
+    </div>
+
+    <!-- Scenes Grid -->
+    <div id="scenes-timeline-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <!-- Scene 1 -->
+      <div class="bg-ink-1 border border-white/15 rounded-2xl p-4 flex flex-col shadow-xl">
+        <div class="flex justify-between items-center text-xs font-mono text-slate-11 mb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-clapperboard text-brand text-xs"></i>
+            SHOT 01: ESTABLISHING
+          </span>
+          <span class="text-brand">00:00 - 00:04</span>
+        </div>
+        <div class="h-44 rounded-xl overflow-hidden bg-black mb-3 relative group cursor-pointer" onclick="openModal('image-detail')">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+            <span class="text-white text-xs font-bold flex items-center gap-1">
+              <i class="hgi-stroke hgi-search-01 text-xs"></i>
+              Inspect Shot
+            </span>
+          </div>
+        </div>
+        <p class="text-xs text-white font-medium mb-1">Wide establishing aerial shot over rain-slicked mega city skyscrapers during twilight.</p>
+        <div class="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-9 font-mono">
+          <span>Camera: Slow Dolly Forward</span>
+          <span>SFX: City Rain Ambience</span>
+        </div>
+      </div>
+
+      <!-- Scene 2 -->
+      <div class="bg-ink-1 border-2 border-brand/60 rounded-2xl p-4 flex flex-col shadow-xl shadow-brand/10">
+        <div class="flex justify-between items-center text-xs font-mono text-slate-11 mb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-ai-user text-accent-cyan text-xs"></i>
+            SHOT 02: PROTAGONIST
+          </span>
+          <span class="text-brand">00:04 - 00:08</span>
+        </div>
+        <div class="h-44 rounded-xl overflow-hidden bg-black mb-3 relative group cursor-pointer" onclick="openModal('image-detail')">
+          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+            <span class="text-white text-xs font-bold flex items-center gap-1">
+              <i class="hgi-stroke hgi-search-01 text-xs"></i>
+              Inspect Shot
+            </span>
+          </div>
+        </div>
+        <p class="text-xs text-white font-medium mb-1">Medium close-up of Elena looking at holographic cipher projection with neon glare in eyes.</p>
+        <div class="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] font-mono">
+          <span class="text-accent-cyan">Character Lock: Elena</span>
+          <span class="text-slate-9">Audio: Dialogue Track A</span>
+        </div>
+      </div>
+
+      <!-- Scene 3 -->
+      <div class="bg-ink-1 border border-white/15 rounded-2xl p-4 flex flex-col shadow-xl">
+        <div class="flex justify-between items-center text-xs font-mono text-slate-11 mb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-flash text-yellow-400 text-xs"></i>
+            SHOT 03: CLIMAX IGNITION
+          </span>
+          <span class="text-brand">00:08 - 00:12</span>
+        </div>
+        <div class="h-44 rounded-xl overflow-hidden bg-black mb-3 relative group cursor-pointer" onclick="openModal('image-detail')">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
+          <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+            <span class="text-white text-xs font-bold flex items-center gap-1">
+              <i class="hgi-stroke hgi-search-01 text-xs"></i>
+              Inspect Shot
+            </span>
+          </div>
+        </div>
+        <p class="text-xs text-white font-medium mb-1">High-voltage energy wave cascades across the cyber streets, creating chromatic light flares.</p>
+        <div class="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-9 font-mono">
+          <span>Camera: 180 Orbit</span>
+          <span>SFX: Sub Bass Drop</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mandatory Deerflow Signature -->
+  <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer" class="deerflow-signature" title="Created by Deerflow">
+    <span class="deerflow-sparkle">✦</span>
+    <span>Created By Deerflow</span>
+  </a>
+
+  <!-- Modals & Scripts -->
+  <script src="js/modals.js"></script>
+  <script>
+    function addSceneAction() {
+      const container = document.getElementById('scenes-timeline-container');
+      const card = document.createElement('div');
+      card.className = 'bg-ink-1 border border-white/15 rounded-2xl p-4 flex flex-col shadow-xl animate-fade-in';
+      card.innerHTML = `
+        <div class="flex justify-between items-center text-xs font-mono text-slate-11 mb-2">
+          <span class="font-bold text-white flex items-center gap-1.5">
+            <i class="hgi-stroke hgi-clapperboard text-brand text-xs"></i>
+            SHOT 04: NEW SCENE
+          </span>
+          <span class="text-brand">00:12 - 00:16</span>
+        </div>
+        <div class="h-44 rounded-xl overflow-hidden bg-black mb-3 flex items-center justify-center border border-white/10">
+          <span class="text-xs text-slate-9 font-mono">Generating shot preview...</span>
+        </div>
+        <p class="text-xs text-white font-medium mb-1">Elena steps onto the aerial skyrail platform as storm clouds roll in.</p>
+        <div class="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-9 font-mono">
+          <span>Camera: Tracking Pan</span>
+          <span>Lip Sync: Active</span>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+  </script>
+</body>
+</html>

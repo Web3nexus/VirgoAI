@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="dark overscroll-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>OpenArt MCP Protocol & CLI — Generate AI Art Inside Your Agent</title>
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#fb23c2', hover: '#ed00b5', glow: 'rgba(251, 35, 194, 0.35)' },
+            ink: { 0: '#090a0a', 1: '#121314', 2: '#16181a', 3: '#1b1d1f', 4: '#242729' },
+            accent: { emerald: '#0ae448', lime: '#ccff3e', cyan: '#22d3ee' },
+            slate: { 8: '#625f69', 9: '#6f6d78', 11: '#b5b2bc', 12: '#eeedf0' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-ink-0 text-slate-12 antialiased flex flex-col min-h-screen">
+
+  <!-- TOP HEADER WITH HUGEICONS -->
+  <header class="border-b border-white/10 bg-ink-0/80 backdrop-blur-xl px-6 py-3.5 sticky top-0 z-40 flex items-center justify-between">
+    <div class="flex items-center gap-8">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:scale-105 transition">
+          <i class="hgi-stroke hgi-ai-magic text-lg text-ink-0"></i>
+        </div>
+        <span class="font-heading font-extrabold text-xl tracking-tight text-white">OpenArt</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-11">
+        <a href="home.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition flex items-center gap-1">
+          <i class="hgi-stroke hgi-home-01 text-xs"></i>
+          <span>Studio Suite</span>
+        </a>
+        <a href="pricing.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">Pricing</a>
+        <a href="enterprise.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">Enterprise</a>
+        <a href="mcp.html" class="px-3 py-2 rounded-lg text-white font-semibold">MCP Protocol</a>
+      </nav>
+    </div>
+    <div class="flex items-center gap-3">
+      <button onclick="openModal('auth')" class="px-4 py-2 text-xs font-semibold text-white hover:text-brand transition">Sign In</button>
+      <a href="create-image.html" class="bg-brand text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg shadow-brand/20 flex items-center gap-1.5">
+        <i class="hgi-stroke hgi-sparkles text-xs"></i>
+        <span>Launch Studio</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-4xl mx-auto px-6 py-16 w-full">
+    <div class="mb-10 text-center">
+      <span class="px-3 py-1 rounded-full bg-accent-lime/10 text-accent-lime text-xs font-mono font-semibold border border-accent-lime/20 mb-3 inline-flex items-center gap-1.5">
+        <i class="hgi-stroke hgi-flash text-xs"></i>
+        Model Context Protocol
+      </span>
+      <h1 class="font-heading font-extrabold text-3xl sm:text-4xl text-white mb-3">Generate Images & Video Directly Inside Your Agent</h1>
+      <p class="text-slate-11 text-sm max-w-xl mx-auto">Equip Claude Code, Antigravity, and Cursor with autonomous generative capabilities via OpenArt's official MCP server.</p>
+    </div>
+
+    <!-- CLI Code Box -->
+    <div class="bg-ink-1 border border-white/15 rounded-2xl p-5 mb-8 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10 text-xs font-mono text-slate-11">
+        <span>Terminal Quickstart</span>
+        <button onclick="navigator.clipboard.writeText('npx @openart/mcp-server@latest --api-key=YOUR_API_KEY'); alert('Copied to clipboard!')" class="text-brand hover:underline font-semibold flex items-center gap-1">
+          <i class="hgi-stroke hgi-copy-01 text-xs"></i>
+          <span>Copy Command</span>
+        </button>
+      </div>
+      <pre class="pt-4 font-mono text-sm text-accent-emerald overflow-x-auto">$ npx @openart/mcp-server@latest --api-key=YOUR_OPENART_KEY</pre>
+    </div>
+
+    <!-- Tool Schema Documentation with Hugeicons -->
+    <div class="space-y-4 mb-10">
+      <h3 class="font-bold text-white text-base">Available Agent Tools</h3>
+      
+      <div class="p-4 rounded-xl bg-ink-1 border border-white/10 font-mono text-xs space-y-1">
+        <span class="text-brand font-semibold flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-ai-image-01 text-xs"></i>
+          openart_generate_image
+        </span>
+        <p class="text-slate-11 font-sans text-xs">Generates high-resolution raster images using Seedream 5.0, FLUX.1, or SDXL with custom aspect ratios.</p>
+        <div class="text-[11px] text-slate-8 pt-1">Arguments: { prompt: string, model?: string, aspect_ratio?: "1:1" | "16:9" | "9:16" }</div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-ink-1 border border-white/10 font-mono text-xs space-y-1">
+        <span class="text-accent-cyan font-semibold flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-ai-video-01 text-xs"></i>
+          openart_generate_video
+        </span>
+        <p class="text-slate-11 font-sans text-xs">Produces 1080p motion video clips from image anchors or text prompts with camera direction.</p>
+        <div class="text-[11px] text-slate-8 pt-1">Arguments: { image_url: string, motion_path: "Pan Left" | "Zoom In" | "Orbit", duration: 5 | 10 }</div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-ink-1 border border-white/10 font-mono text-xs space-y-1">
+        <span class="text-accent-emerald font-semibold flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-sparkles text-xs"></i>
+          openart_topaz_upscale
+        </span>
+        <p class="text-slate-11 font-sans text-xs">Enhances image resolution up to 8x with facial restoration and texture reconstruction.</p>
+        <div class="text-[11px] text-slate-8 pt-1">Arguments: { asset_url: string, multiplier: 2 | 4 | 8, face_restore: boolean }</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mandatory Deerflow Signature -->
+  <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer" class="deerflow-signature" title="Created by Deerflow">
+    <span class="deerflow-sparkle">✦</span>
+    <span>Created By Deerflow</span>
+  </a>
+
+  <!-- Modals & Scripts -->
+  <script src="js/modals.js"></script>
+</body>
+</html>

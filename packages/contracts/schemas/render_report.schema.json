@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/render_report.v1",
+  "title": "RenderReport",
+  "type": "object",
+  "required": ["version", "output_path", "format", "width", "height", "fps", "duration_seconds", "runtime"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "output_path": { "type": "string", "minLength": 1 },
+    "format": { "const": "mp4" },
+    "width": { "type": "integer", "minimum": 16 },
+    "height": { "type": "integer", "minimum": 16 },
+    "fps": { "type": "integer", "minimum": 1, "maximum": 120 },
+    "duration_seconds": { "type": "number", "exclusiveMinimum": 0 },
+    "runtime": { "enum": ["remotion", "ffmpeg"] }
+  }
+}

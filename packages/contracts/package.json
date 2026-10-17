@@ -1,0 +1,19 @@
+{
+  "name": "@virgoai/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Artifact JSON Schemas and pipeline manifest validation for virgoAi (DEC-0008)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/artifacts.test.js test/manifest.test.js",
+    "validate:manifests": "node src/validate-manifest.js ../../docs/pipelines/generative-video.yaml"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.9.1"
+  }
+}

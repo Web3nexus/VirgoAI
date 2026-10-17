@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/character_design.v1",
+  "title": "CharacterDesign",
+  "type": "object",
+  "required": ["version", "characters"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "characters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["character_id", "name", "identity_block", "reference_image"],
+        "additionalProperties": false,
+        "properties": {
+          "character_id": { "$ref": "#/$defs/id" },
+          "name": { "type": "string", "minLength": 1 },
+          "identity_block": {
+            "type": "string",
+            "minLength": 40,
+            "description": "Stable appearance text reused verbatim in every image prompt for this character."
+          },
+          "reference_image": {
+            "type": "object",
+            "required": ["asset_id", "status"],
+            "additionalProperties": false,
+            "properties": {
+              "asset_id": { "type": "string", "minLength": 1 },
+              "status": { "enum": ["pending", "approved", "rejected"] }
+            }
+          },
+          "voice": {
+            "type": "object",
+            "description": "Required in dialogue and both modes. Voice is locked for the whole video.",
+            "required": ["provider_key", "voice_id", "description"],
+            "additionalProperties": false,
+            "properties": {
+              "provider_key": { "type": "string", "minLength": 1 },
+              "voice_id": { "type": "string", "minLength": 1 },
+              "description": { "type": "string", "minLength": 1 },
+              "consent_ref": { "type": "string", "description": "Required when the voice imitates a real person." }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+  }
+}

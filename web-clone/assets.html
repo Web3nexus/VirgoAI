@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" class="dark overscroll-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>Assets & Projects Vault — OpenArt Suite</title>
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#fb23c2', hover: '#ed00b5', glow: 'rgba(251, 35, 194, 0.35)' },
+            ink: { 0: '#090a0a', 1: '#121314', 2: '#16181a', 3: '#1b1d1f', 4: '#242729' },
+            accent: { emerald: '#0ae448', lime: '#ccff3e', cyan: '#22d3ee' },
+            slate: { 8: '#625f69', 9: '#6f6d78', 11: '#b5b2bc', 12: '#eeedf0' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-ink-0 text-slate-12 antialiased flex flex-col h-screen overflow-hidden">
+
+  <!-- TOP HEADER WITH HUGEICONS -->
+  <header class="h-14 border-b border-white/10 px-4 flex items-center justify-between shrink-0 bg-ink-1">
+    <div class="flex items-center gap-4">
+      <a href="home.html" class="flex items-center gap-2 group">
+        <div class="w-7 h-7 rounded-lg bg-white flex items-center justify-center text-ink-0 shadow-md">
+          <i class="hgi-stroke hgi-ai-magic text-base text-ink-0"></i>
+        </div>
+        <span class="font-heading font-extrabold text-white text-base tracking-tight">OpenArt Vault</span>
+      </a>
+      <span class="text-slate-8">/</span>
+      <span class="text-xs font-semibold text-white flex items-center gap-1.5">
+        <i class="hgi-stroke hgi-folder-01 text-brand text-sm"></i>
+        My Creations & Media
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3 text-xs font-semibold">
+      <a href="home.html" class="text-slate-11 hover:text-white px-2 py-1 flex items-center gap-1">
+        <i class="hgi-stroke hgi-home-01 text-xs"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="create-image.html" class="text-slate-11 hover:text-white px-2 py-1 flex items-center gap-1">
+        <i class="hgi-stroke hgi-ai-image-01 text-xs"></i>
+        <span>Image Studio</span>
+      </a>
+      <button onclick="openModal('export')" class="bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl font-bold transition flex items-center gap-1.5 shadow-lg shadow-brand/20">
+        <i class="hgi-stroke hgi-download-01 text-xs"></i>
+        <span>Bulk Export (ZIP)</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto custom-scrollbar p-6 max-w-7xl mx-auto w-full">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="font-heading font-extrabold text-2xl text-white">Media Vault & Director Projects</h1>
+        <p class="text-xs text-slate-11">Manage all exported stills, 1080p clips, character identity sheets, and sound clips</p>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="flex items-center gap-1.5 bg-ink-1 border border-white/10 p-1 rounded-xl text-xs">
+        <button class="px-3 py-1.5 rounded-lg bg-brand text-white font-semibold">All Assets (12)</button>
+        <button class="px-3 py-1.5 rounded-lg text-slate-11 hover:text-white">Images</button>
+        <button class="px-3 py-1.5 rounded-lg text-slate-11 hover:text-white">Videos</button>
+        <button class="px-3 py-1.5 rounded-lg text-slate-11 hover:text-white">Storyboards</button>
+      </div>
+    </div>
+
+    <!-- Assets Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div onclick="openModal('image-detail')" class="bg-ink-1 border border-white/10 rounded-2xl overflow-hidden aspect-square cursor-pointer group relative">
+        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition">
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition p-3 flex flex-col justify-end text-xs">
+          <span class="text-white font-bold truncate">Cyber Fluid Portrait</span>
+          <span class="text-[10px] text-brand">PNG 4K &bull; Seedream 5.0</span>
+        </div>
+      </div>
+
+      <div onclick="openModal('image-detail')" class="bg-ink-1 border border-white/10 rounded-2xl overflow-hidden aspect-square cursor-pointer group relative">
+        <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition">
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition p-3 flex flex-col justify-end text-xs">
+          <span class="text-white font-bold truncate">Baroque Golden Foil</span>
+          <span class="text-[10px] text-brand">JPG 2K &bull; FLUX.1</span>
+        </div>
+      </div>
+
+      <div onclick="openModal('image-detail')" class="bg-ink-1 border border-white/10 rounded-2xl overflow-hidden aspect-square cursor-pointer group relative">
+        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition">
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition p-3 flex flex-col justify-end text-xs">
+          <span class="text-white font-bold truncate">Elena Anchor Sheet</span>
+          <span class="text-[10px] text-brand">Character Lock 99.4%</span>
+        </div>
+      </div>
+
+      <div onclick="openModal('image-detail')" class="bg-ink-1 border border-white/10 rounded-2xl overflow-hidden aspect-square cursor-pointer group relative">
+        <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition">
+        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition p-3 flex flex-col justify-end text-xs">
+          <span class="text-white font-bold truncate">Cyber Skyline Reel</span>
+          <span class="text-[10px] text-accent-cyan">MP4 1080p &bull; Veo 3</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mandatory Deerflow Signature -->
+  <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer" class="deerflow-signature" title="Created by Deerflow">
+    <span class="deerflow-sparkle">✦</span>
+    <span>Created By Deerflow</span>
+  </a>
+
+  <!-- Modals & Scripts -->
+  <script src="js/modals.js"></script>
+</body>
+</html>

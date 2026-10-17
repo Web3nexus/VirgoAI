@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/research_brief.v1",
+  "title": "ResearchBrief",
+  "type": "object",
+  "required": ["version", "summary", "data_points", "sources", "no_research_needed"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "summary": { "type": "string", "minLength": 1 },
+    "no_research_needed": {
+      "type": "boolean",
+      "description": "True only when the input already carries the facts (for example, a transcript or script)."
+    },
+    "data_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["claim", "source_url"],
+        "additionalProperties": false,
+        "properties": {
+          "claim": { "type": "string", "minLength": 1 },
+          "source_url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["url", "title"],
+        "additionalProperties": false,
+        "properties": {
+          "url": { "type": "string", "format": "uri" },
+          "title": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "if": { "properties": { "no_research_needed": { "const": false } }, "required": ["no_research_needed"] },
+  "then": {
+    "properties": {
+      "data_points": { "type": "array", "minItems": 3 },
+      "sources": { "type": "array", "minItems": 3 }
+    }
+  }
+}

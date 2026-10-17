@@ -1,0 +1,15 @@
+# Agent-installed skills — derived from skills-lock.json
+# Restore with: npx skills experimental_install
+.agents/
+.claude/skills/
+/agent/
+
+# Node dependencies (packages/contracts, apps/*)
+node_modules/
+
+# OS / editor noise
+.DS_Store
+*.log
+
+# Local QA artifacts (playwright-cli screenshots/snapshots/console)
+.playwright-cli/

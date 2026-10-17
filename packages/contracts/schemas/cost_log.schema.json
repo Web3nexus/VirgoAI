@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "virgoAi/cost_log.v1",
+  "title": "CostLog",
+  "type": "object",
+  "required": ["version", "budget_usd", "entries"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "const": "1.0" },
+    "budget_usd": { "type": "number", "exclusiveMinimum": 0 },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entry_id", "stage", "tool", "capability", "status", "estimated_usd"],
+        "additionalProperties": false,
+        "properties": {
+          "entry_id": { "type": "string", "minLength": 1 },
+          "stage": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "tool": { "type": "string", "minLength": 1 },
+          "capability": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["estimated", "reserved", "completed", "failed", "refunded"] },
+          "estimated_usd": { "type": "number", "minimum": 0 },
+          "actual_usd": { "type": "number", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

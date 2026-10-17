@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en" class="dark overscroll-none">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <title>OpenArt AI — Free AI Image, Video & Audio Generator Clone</title>
+  <meta name="description" content="All-in-one AI platform for creating images, videos, characters, and audio. 100+ models from Google, BytePlus, Kling, and Seedream.">
+  <link rel="stylesheet" href="https://use.hugeicons.com/font/icons.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#fb23c2', hover: '#ed00b5', glow: 'rgba(251, 35, 194, 0.35)' },
+            ink: { 0: '#090a0a', 1: '#121314', 2: '#16181a', 3: '#1b1d1f', 4: '#242729' },
+            accent: { emerald: '#0ae448', lime: '#ccff3e', cyan: '#22d3ee' },
+            slate: { 8: '#625f69', 9: '#6f6d78', 11: '#b5b2bc', 12: '#eeedf0' }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-ink-0 text-slate-12 antialiased selection:bg-brand selection:text-white flex flex-col min-h-screen">
+
+  <!-- TOP PROMO BANNER -->
+  <div id="top-promo" class="bg-gradient-to-r from-accent-emerald via-[#76f98c] to-accent-lime text-ink-0 text-xs py-2 px-4 font-semibold flex items-center justify-center gap-3 relative transition-all">
+    <span class="flex items-center gap-1.5">
+      <i class="hgi-stroke hgi-flash text-xs"></i>
+      Limited-Time Promo! Unlock unlimited creations with Annual Plans at UP TO 27% OFF.
+    </span>
+    <a href="pricing.html" class="bg-ink-0 text-white px-3 py-0.5 rounded-full text-[11px] font-bold hover:bg-ink-4 transition shadow-sm flex items-center gap-1">
+      <span>View Plans</span>
+      <i class="hgi-stroke hgi-arrow-right-01 text-[10px]"></i>
+    </a>
+    <button onclick="document.getElementById('top-promo').remove()" class="absolute right-4 text-ink-0/60 hover:text-ink-0">
+      <i class="hgi-stroke hgi-cancel-01 text-xs"></i>
+    </button>
+  </div>
+
+  <!-- PERSISTENT TOP NAVIGATION BAR WITH HUGEICONS -->
+  <header class="border-b border-white/10 bg-ink-0/80 backdrop-blur-xl px-6 py-3.5 sticky top-0 z-40 flex items-center justify-between">
+    <div class="flex items-center gap-8">
+      <!-- OpenArt Logo -->
+      <a href="index.html" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:scale-105 transition">
+          <i class="hgi-stroke hgi-ai-magic text-lg text-ink-0"></i>
+        </div>
+        <span class="font-heading font-extrabold text-xl tracking-tight text-white">OpenArt</span>
+      </a>
+
+      <!-- Main Navigation Links -->
+      <nav class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-11">
+        <!-- Tools Dropdown -->
+        <div class="relative group/nav">
+          <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">
+            <span>AI Tools</span>
+            <i class="hgi-stroke hgi-arrow-down-01 text-xs text-slate-9 group-hover/nav:rotate-180 transition-transform"></i>
+          </button>
+          <div class="absolute left-0 top-full pt-2 hidden group-hover/nav:block w-[480px]">
+            <div class="glass-dropdown rounded-2xl p-4 grid grid-cols-2 gap-3">
+              <a href="create-image.html" class="p-2.5 rounded-xl hover:bg-white/5 transition flex items-start gap-3">
+                <span class="p-2 rounded-lg bg-brand/20 text-brand">
+                  <i class="hgi-stroke hgi-ai-image-01 text-base"></i>
+                </span>
+                <div>
+                  <h4 class="text-white font-medium text-xs">Image Generator</h4>
+                  <p class="text-[11px] text-slate-9">Seedream 5.0 & FLUX.1 models</p>
+                </div>
+              </a>
+              <a href="create-video.html" class="p-2.5 rounded-xl hover:bg-white/5 transition flex items-start gap-3">
+                <span class="p-2 rounded-lg bg-accent-cyan/20 text-accent-cyan">
+                  <i class="hgi-stroke hgi-ai-video-01 text-base"></i>
+                </span>
+                <div>
+                  <h4 class="text-white font-medium text-xs">Video Generator</h4>
+                  <p class="text-[11px] text-slate-9">Google Veo 3 & Kling 3.0</p>
+                </div>
+              </a>
+              <a href="director.html" class="p-2.5 rounded-xl hover:bg-white/5 transition flex items-start gap-3">
+                <span class="p-2 rounded-lg bg-accent-emerald/20 text-accent-emerald">
+                  <i class="hgi-stroke hgi-camera-video text-base"></i>
+                </span>
+                <div>
+                  <h4 class="text-white font-medium text-xs">Director Mode</h4>
+                  <p class="text-[11px] text-slate-9">Multi-shot storyboard timeline</p>
+                </div>
+              </a>
+              <a href="character.html" class="p-2.5 rounded-xl hover:bg-white/5 transition flex items-start gap-3">
+                <span class="p-2 rounded-lg bg-accent-lime/20 text-accent-lime">
+                  <i class="hgi-stroke hgi-ai-user text-base"></i>
+                </span>
+                <div>
+                  <h4 class="text-white font-medium text-xs">Character Continuity</h4>
+                  <p class="text-[11px] text-slate-9">Lock face & style across scenes</p>
+                </div>
+              </a>
+              <a href="world.html" class="p-2.5 rounded-xl hover:bg-white/5 transition flex items-start gap-3">
+                <span class="p-2 rounded-lg bg-indigo-500/20 text-indigo-400">
+                  <i class="hgi-stroke hgi-globe-02 text-base"></i>
+                </span>
+                <div>
+                  <h4 class="text-white font-medium text-xs">3D World</h4>
+                  <p class="text-[11px] text-slate-9">Navigable spatial projection</p>
+                </div>
+              </a>
+              <a href="motion-sync.html" class="p-2.5 rounded-xl hover:bg-white/5 transition flex items-start gap-3">
+                <span class="p-2 rounded-lg bg-yellow-500/20 text-yellow-400">
+                  <i class="hgi-stroke hgi-flash text-base"></i>
+                </span>
+                <div>
+                  <h4 class="text-white font-medium text-xs">Motion Sync</h4>
+                  <p class="text-[11px] text-slate-9">Transfer real video dance/action</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <a href="home.html" class="px-3 py-2 rounded-lg text-brand font-semibold hover:bg-brand/10 transition flex items-center gap-1.5">
+          <span>Studio Suite</span>
+          <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+        </a>
+        <button onclick="openModal('model-selector')" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">AI Models (100+)</button>
+        <a href="pricing.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">Pricing</a>
+        <a href="enterprise.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition">Enterprise</a>
+        <a href="mcp.html" class="px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 transition flex items-center gap-1">
+          <span>MCP</span>
+          <span class="bg-accent-lime text-ink-0 text-[10px] font-bold px-1.5 py-0.2 rounded-full">New</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Right Controls -->
+    <div class="flex items-center gap-3">
+      <button onclick="openModal('credits')" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-ink-2 hover:bg-ink-3 border border-white/10 text-xs transition">
+        <i class="hgi-stroke hgi-diamond-01 text-accent-emerald text-sm"></i>
+        <span class="font-semibold text-white credit-balance-display">50 Credits</span>
+        <span class="text-brand font-medium text-[11px]">+ Top Up</span>
+      </button>
+
+      <button onclick="openModal('auth')" class="px-4 py-2 text-xs font-semibold text-white hover:text-brand transition">Sign In</button>
+      <a href="home.html" class="bg-white hover:bg-slate-12 text-ink-0 px-4 py-2 rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5 active:scale-95">
+        <span>Enter Suite</span>
+        <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- QUICK DEVELOPER JUMP BAR (EXPLORE ALL CONNECTED PAGES & MODALS) -->
+  <div class="bg-ink-1/90 border-b border-white/10 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="flex items-center gap-2">
+      <span class="px-2 py-0.5 rounded bg-brand/20 text-brand font-mono text-[10px] font-bold">PAGES DIRECTORY:</span>
+      <div class="flex items-center gap-1 overflow-x-auto text-xs">
+        <a href="index.html" class="px-2.5 py-1 rounded-md bg-brand text-white font-medium">Landing</a>
+        <a href="home.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Suite Home</a>
+        <a href="create-image.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Image Studio</a>
+        <a href="create-video.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Video Studio</a>
+        <a href="director.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Director</a>
+        <a href="character.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Character</a>
+        <a href="world.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">3D World</a>
+        <a href="motion-sync.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Motion Sync</a>
+        <a href="assets.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Asset Vault</a>
+        <a href="pricing.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Pricing</a>
+        <a href="enterprise.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">Enterprise</a>
+        <a href="mcp.html" class="px-2.5 py-1 rounded-md text-slate-11 hover:text-white hover:bg-white/5 transition">MCP CLI</a>
+      </div>
+    </div>
+
+    <!-- Modals Tester Dropdown -->
+    <div class="relative group">
+      <button class="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/15 text-white rounded-md border border-white/15 transition font-semibold">
+        <i class="hgi-stroke hgi-sliders-horizontal text-xs text-brand"></i>
+        <span>Test 9 Modals</span>
+        <i class="hgi-stroke hgi-arrow-down-01 text-[10px]"></i>
+      </button>
+      <div class="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col w-56 glass-dropdown rounded-xl p-1.5 z-50">
+        <button onclick="openModal('auth')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">1. Sign In (Auth) <span class="font-mono text-[9px] text-slate-8">auth</span></button>
+        <button onclick="openModal('image-detail')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">2. Image Inspector <span class="font-mono text-[9px] text-slate-8">remix</span></button>
+        <button onclick="openModal('credits')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">3. Credits & Plans <span class="font-mono text-[9px] text-slate-8">credits</span></button>
+        <button onclick="openModal('model-selector')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">4. Model Catalog <span class="font-mono text-[9px] text-slate-8">models</span></button>
+        <button onclick="openModal('styles')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">5. Visual Styles <span class="font-mono text-[9px] text-slate-8">styles</span></button>
+        <button onclick="openModal('camera')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">6. 3D Camera Gimbal <span class="font-mono text-[9px] text-slate-8">camera</span></button>
+        <button onclick="openModal('upscale')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">7. Topaz AI Upscale <span class="font-mono text-[9px] text-slate-8">upscale</span></button>
+        <button onclick="openModal('export')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">8. Export Container <span class="font-mono text-[9px] text-slate-8">export</span></button>
+        <button onclick="openModal('shortcuts')" class="text-left px-3 py-1.5 hover:bg-white/5 rounded-lg text-slate-12 hover:text-brand flex justify-between">9. Studio Hotkeys <span class="font-mono text-[9px] text-slate-8">hotkeys</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO SECTION -->
+  <main class="flex-1 flex flex-col">
+    <div class="relative pt-20 pb-16 px-6 max-w-7xl mx-auto w-full text-center flex flex-col items-center">
+      <div class="hero-glow-bg"></div>
+
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs mb-8 backdrop-blur-md">
+        <span class="w-2 h-2 rounded-full bg-brand"></span>
+        <span class="text-slate-11">BytePlus Seedance 2.5 & Google Veo 3 Video Generator</span>
+        <a href="home.html" class="text-brand font-semibold hover:underline flex items-center gap-1">
+          <span>Explore Suite</span>
+          <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+        </a>
+      </div>
+
+      <h1 class="font-heading font-extrabold text-4xl sm:text-6xl md:text-7xl tracking-tight max-w-4xl leading-[1.08] mb-6">
+        AI Art Generator: Free <br>
+        <span class="gradient-hero-text">Image, Video & Audio Studio</span>
+      </h1>
+
+      <p class="text-slate-11 text-base sm:text-lg max-w-2xl mb-10 leading-relaxed font-normal">
+        Create AI art, cinematic films, and viral music with 100+ state-of-the-art models from Google, OpenAI, Seedance & more. Trusted by 8M+ creators worldwide.
+      </p>
+
+      <!-- Interactive Quick Prompt Box -->
+      <div class="w-full max-w-2xl bg-ink-1/90 border border-white/15 p-2 rounded-2xl shadow-2xl backdrop-blur-xl flex flex-col gap-2 relative z-10">
+        <div class="flex items-center gap-3 px-3 pt-2">
+          <span class="text-xs font-mono text-brand font-semibold flex items-center gap-1">
+            <i class="hgi-stroke hgi-ai-magic text-xs"></i>
+            Prompt Sandbox:
+          </span>
+          <span class="text-xs text-slate-9 font-normal">Try any aesthetic idea</span>
+        </div>
+        <div class="flex items-center gap-2 px-2 pb-1">
+          <input id="landing-prompt-input" type="text" value="Cinematic 35mm film still of a futuristic neon Kyoto alleyway, rainy reflections, volumetric smoke, high detail" class="flex-1 bg-transparent border-0 outline-none text-white text-sm placeholder-slate-9 px-2 py-1 font-sans">
+          <button onclick="launchPromptToStudio()" class="bg-brand hover:bg-brand-hover text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-lg shadow-brand/20 shrink-0 flex items-center gap-2 active:scale-95">
+            <span>Generate Now</span>
+            <i class="hgi-stroke hgi-sparkles text-xs"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Featured AI Model Badges with Hugeicons -->
+      <div class="flex flex-wrap items-center justify-center gap-3 mt-12 text-xs text-slate-11">
+        <span class="text-slate-9 font-mono">POWERED BY:</span>
+        <button onclick="openModal('model-selector')" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/50 transition flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-flash text-xs text-yellow-400"></i>
+          <span>Seedream 5.0</span>
+        </button>
+        <button onclick="openModal('model-selector')" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/50 transition flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-ai-video-01 text-xs text-accent-cyan"></i>
+          <span>Google Veo 3</span>
+        </button>
+        <button onclick="openModal('model-selector')" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/50 transition flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-sparkles text-xs text-brand"></i>
+          <span>Kling 3.0</span>
+        </button>
+        <button onclick="openModal('model-selector')" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/50 transition flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-clapperboard text-xs text-amber-300"></i>
+          <span>Sora 2</span>
+        </button>
+        <button onclick="openModal('model-selector')" class="px-3 py-1 rounded-full bg-white/5 border border-white/10 hover:border-brand/50 transition flex items-center gap-1.5">
+          <i class="hgi-stroke hgi-ai-image-01 text-xs text-accent-emerald"></i>
+          <span>FLUX.1 Dev</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Infinite Marquee Art Gallery -->
+    <div class="w-full overflow-hidden py-10 border-y border-white/5 bg-ink-1/40">
+      <div class="animate-marquee gap-5 px-4">
+        <div onclick="openModal('image-detail')" class="w-64 h-80 rounded-2xl bg-ink-2 overflow-hidden border border-white/10 group cursor-pointer relative shrink-0">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition p-4 flex flex-col justify-end">
+            <span class="text-xs font-semibold text-white">Cybernetic Fluid Portrait</span>
+            <span class="text-[10px] text-slate-11">Seedream 5.0 &bull; 1:1</span>
+          </div>
+        </div>
+
+        <div onclick="openModal('image-detail')" class="w-64 h-80 rounded-2xl bg-ink-2 overflow-hidden border border-white/10 group cursor-pointer relative shrink-0">
+          <img src="https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition p-4 flex flex-col justify-end">
+            <span class="text-xs font-semibold text-white">Baroque Golden Renaissance</span>
+            <span class="text-[10px] text-slate-11">FLUX.1 &bull; 9:16</span>
+          </div>
+        </div>
+
+        <div onclick="openModal('image-detail')" class="w-64 h-80 rounded-2xl bg-ink-2 overflow-hidden border border-white/10 group cursor-pointer relative shrink-0">
+          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition p-4 flex flex-col justify-end">
+            <span class="text-xs font-semibold text-white">Consistent Character: Elena</span>
+            <span class="text-[10px] text-slate-11">Character Lock &bull; 16:9</span>
+          </div>
+        </div>
+
+        <div onclick="openModal('image-detail')" class="w-64 h-80 rounded-2xl bg-ink-2 overflow-hidden border border-white/10 group cursor-pointer relative shrink-0">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition p-4 flex flex-col justify-end">
+            <span class="text-xs font-semibold text-white">Brutalist Glass Space Colony</span>
+            <span class="text-[10px] text-slate-11">Google Veo 3 &bull; 16:9</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Features Grid with Hugeicons -->
+    <div class="max-w-7xl mx-auto px-6 py-20 w-full">
+      <div class="text-center mb-16">
+        <h2 class="font-heading font-bold text-3xl sm:text-5xl tracking-tight mb-4 text-white">The All-in-One AI Studio</h2>
+        <p class="text-slate-11 max-w-xl mx-auto text-sm">Everything you need to produce cinematic commercials, social reels, or visual worlds without complex software.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="director.html" class="glass-panel rounded-2xl p-6 flex flex-col hover:border-brand/40 transition group">
+          <div class="w-12 h-12 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand mb-4 group-hover:scale-105 transition">
+            <i class="hgi-stroke hgi-camera-video text-2xl"></i>
+          </div>
+          <h3 class="font-heading font-bold text-xl text-white mb-2">Director Mode</h3>
+          <p class="text-slate-11 text-xs leading-relaxed mb-6">Storyboard full scenes, control camera motions, and sequence audio with seamless lip-sync in a single timeline.</p>
+          <span class="mt-auto text-brand text-xs font-semibold flex items-center gap-1">
+            <span>Open Director Studio</span>
+            <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+          </span>
+        </a>
+
+        <a href="character.html" class="glass-panel rounded-2xl p-6 flex flex-col hover:border-accent-cyan/40 transition group">
+          <div class="w-12 h-12 rounded-xl bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan mb-4 group-hover:scale-105 transition">
+            <i class="hgi-stroke hgi-ai-user text-2xl"></i>
+          </div>
+          <h3 class="font-heading font-bold text-xl text-white mb-2">Consistent Characters</h3>
+          <p class="text-slate-11 text-xs leading-relaxed mb-6">Create recurring AI influencers and characters with face continuity across different angles, clothing, and moods.</p>
+          <span class="mt-auto text-accent-cyan text-xs font-semibold flex items-center gap-1">
+            <span>Launch Character Studio</span>
+            <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+          </span>
+        </a>
+
+        <a href="mcp.html" class="glass-panel rounded-2xl p-6 flex flex-col hover:border-accent-emerald/40 transition group">
+          <div class="w-12 h-12 rounded-xl bg-accent-emerald/10 border border-accent-emerald/20 flex items-center justify-center text-accent-emerald mb-4 group-hover:scale-105 transition">
+            <i class="hgi-stroke hgi-flash text-2xl"></i>
+          </div>
+          <h3 class="font-heading font-bold text-xl text-white mb-2">Agent MCP Protocol</h3>
+          <p class="text-slate-11 text-xs leading-relaxed mb-6">Integrate OpenArt generative pipelines directly into Cursor, Claude Code, and autonomous AI agents with our CLI tools.</p>
+          <span class="mt-auto text-accent-emerald text-xs font-semibold flex items-center gap-1">
+            <span>View MCP Documentation</span>
+            <i class="hgi-stroke hgi-arrow-right-01 text-xs"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mandatory Deerflow Signature -->
+  <a href="https://deerflow.tech" target="_blank" rel="noopener noreferrer" class="deerflow-signature" title="Created by Deerflow">
+    <span class="deerflow-sparkle">✦</span>
+    <span>Created By Deerflow</span>
+  </a>
+
+  <!-- Modals & Scripts -->
+  <script src="js/modals.js"></script>
+  <script>
+    function launchPromptToStudio() {
+      const p = document.getElementById('landing-prompt-input').value;
+      window.location.href = 'create-image.html?prompt=' + encodeURIComponent(p);
+    }
+  </script>
+</body>
+</html>
