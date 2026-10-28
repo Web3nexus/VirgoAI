@@ -13,3 +13,9 @@ node_modules/
 
 # Local QA artifacts (playwright-cli screenshots/snapshots/console)
 .playwright-cli/
+
+# Playwright MCP snapshots and root screenshots from QA runs
+.playwright-mcp/
+/after-login.png
+/lab.png
+/story-tool.png
