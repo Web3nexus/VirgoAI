@@ -40,8 +40,20 @@ final class FalEndpoints
 
     public const VIDEO_VEO_3_FAST = 'fal-ai/veo3/fast/image-to-video';
 
+    /**
+     * Seedance 2.0 with up to nine reference images in one call (cast sheets, locations, a previous shot). Each
+     * take of a film is one call of 4 to 15 seconds. Internal: the film engine uses it, not the picker.
+     */
+    public const VIDEO_SEEDANCE_REF = 'bytedance/seedance-2.0/reference-to-video';
+
+    /** Most reference images one Seedance reference call accepts. */
+    public const SEEDANCE_REF_MAX_IMAGES = 9;
+
     /** Speech-to-text for clipping. Internal: it is not offered in the model picker. */
     public const TRANSCRIBE = 'fal-ai/whisper';
+
+    /** GPT Image's own default. The app used to send medium, which is the tier that looked soft in keyframes. */
+    public const DEFAULT_IMAGE_QUALITY = 'high';
 
     /** Shown in the model picker. The edit endpoint is chosen automatically when a reference image is given. */
     private const SELECTABLE = [
@@ -161,6 +173,12 @@ final class FalEndpoints
                 'selectable' => true,
                 'fields' => ['prompt', 'image_url', 'resolution', 'duration', 'aspect_ratio', 'generate_audio'],
             ],
+            self::VIDEO_SEEDANCE_REF => [
+                'capability' => Capability::Video,
+                'category' => 'reference-to-video',
+                'selectable' => false,
+                'fields' => ['prompt', 'image_urls', 'resolution', 'duration', 'aspect_ratio', 'generate_audio'],
+            ],
             self::TRANSCRIBE => [
                 'capability' => Capability::Audio,
                 'category' => 'speech-to-text',
@@ -168,6 +186,30 @@ final class FalEndpoints
                 'fields' => ['audio_url', 'task', 'chunk_level'],
             ],
         ];
+    }
+
+    /** The GPT Image size a project format is sent as. The same value the request payload uses. */
+    public static function gptImageSize(string $format): string
+    {
+        return self::GPT_IMAGE_SIZES[$format] ?? self::GPT_IMAGE_SIZES[Project::DEFAULT_FORMAT];
+    }
+
+    /**
+     * The seconds the provider bills for one call, given the duration the app asks for. It follows each payload
+     * builder exactly: Veo and Hailuo round the request up to the lengths they offer, so a 5-second request is billed as 6.
+     */
+    public static function billableSeconds(string $endpointId, mixed $duration): int
+    {
+        return match ($endpointId) {
+            self::VIDEO_IMAGE, self::VIDEO_SEEDANCE_FAST, self::VIDEO_SEEDANCE_REF => $duration === 'auto'
+                ? 15
+                : (int) self::duration($duration),
+            self::VIDEO_KLING => max(3, min(15, (int) ($duration ?? 5))),
+            self::VIDEO_VEO_31_FAST, self::VIDEO_VEO_3_FAST => (int) rtrim(self::veoDuration($duration), 's'),
+            self::VIDEO_HAILUO => ((int) ($duration ?? 6)) > 6 ? 10 : 6,
+            // Any other endpoint (speech to text, for one) is billed per second of the input, rounded up so it is never short.
+            default => max(1, (int) ceil((float) ($duration ?? 5))),
+        };
     }
 
     /** @return list<string> */
@@ -211,7 +253,7 @@ final class FalEndpoints
             self::IMAGE_TEXT => [
                 'prompt' => $request->prompt,
                 'image_size' => self::GPT_IMAGE_SIZES[$format] ?? self::GPT_IMAGE_SIZES[Project::DEFAULT_FORMAT],
-                'quality' => $request->options['quality'] ?? 'medium',
+                'quality' => $request->options['quality'] ?? self::DEFAULT_IMAGE_QUALITY,
                 'num_images' => 1,
                 'output_format' => 'png',
             ],
@@ -219,9 +261,17 @@ final class FalEndpoints
                 'prompt' => $request->prompt,
                 'image_urls' => [self::requireImageUrl($request)],
                 'image_size' => self::GPT_IMAGE_SIZES[$format] ?? self::GPT_IMAGE_SIZES[Project::DEFAULT_FORMAT],
-                'quality' => $request->options['quality'] ?? 'medium',
+                'quality' => $request->options['quality'] ?? self::DEFAULT_IMAGE_QUALITY,
                 'num_images' => 1,
                 'output_format' => 'png',
+            ],
+            self::VIDEO_SEEDANCE_REF => [
+                'prompt' => $request->prompt,
+                'image_urls' => self::requireImageUrls($request),
+                'resolution' => $request->options['resolution'] ?? '720p',
+                'duration' => self::duration($request->options['duration'] ?? null),
+                'aspect_ratio' => self::SEEDANCE_RATIOS[$format] ?? self::SEEDANCE_RATIOS[Project::DEFAULT_FORMAT],
+                'generate_audio' => (bool) ($request->options['generate_audio'] ?? true),
             ],
             self::VIDEO_IMAGE, self::VIDEO_SEEDANCE_FAST => [
                 'prompt' => $request->prompt,
@@ -319,6 +369,24 @@ final class FalEndpoints
         }
 
         return $url;
+    }
+
+    /** @return list<string> */
+    private static function requireImageUrls(GenerationRequest $request): array
+    {
+        $urls = $request->inputs['image_urls'] ?? null;
+
+        if (! is_array($urls) || $urls === [] || count($urls) > self::SEEDANCE_REF_MAX_IMAGES) {
+            throw new InvalidArgumentException('This model needs 1 to '.self::SEEDANCE_REF_MAX_IMAGES.' reference image URLs.');
+        }
+
+        foreach ($urls as $url) {
+            if (! is_string($url) || $url === '') {
+                throw new InvalidArgumentException('Every reference image needs a URL.');
+            }
+        }
+
+        return array_values($urls);
     }
 
     private static function requireImageUrl(GenerationRequest $request): string

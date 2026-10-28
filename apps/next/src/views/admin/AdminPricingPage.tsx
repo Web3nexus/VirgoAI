@@ -6,8 +6,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useAdminPricing, useSyncPricing, useUpdateMargin, useUpdatePrice } from '@/features/admin/hooks'
-import type { ModelPriceRow } from '@/features/admin/types'
+import { useAdminPricing, useSyncPricing, useUpdateMargin, useUpdatePrice, useUpdatePromo } from '@/features/admin/hooks'
+import type { ModelPriceRow, PersonalPromoConfig } from '@/features/admin/types'
 import { formatTime } from '@/features/workflows/timeline'
 import { percent, usdUnit } from '@/lib/money'
 
@@ -47,6 +47,7 @@ export function AdminPricingPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <MarginForm current={data.margin_percent} keptShare={data.kept_share_percent} />
+        <PromoForm current={data.promo} />
         <Card className="glass border-border/60">
           <CardContent className="space-y-4 p-5">
             <div>
@@ -129,6 +130,63 @@ function MarginForm({ current, keptShare }: { current: number; keptShare: number
           </div>
           <Button type="submit" disabled={!valid || parsed === current || update.isPending}>
             Save margin
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+/** The welcome offer. Shown to accounts that have not bought yet, inside the window after they sign up. */
+function PromoForm({ current }: { current: PersonalPromoConfig }) {
+  const [draft, setDraft] = useState<PersonalPromoConfig>(current)
+  const update = useUpdatePromo()
+  const valid =
+    /^[A-Za-z0-9_]{1,32}$/.test(draft.code) &&
+    Number.isInteger(draft.percent) && draft.percent >= 1 && draft.percent <= 90 &&
+    Number.isInteger(draft.window_hours) && draft.window_hours >= 1 && draft.window_hours <= 168
+  const changed = JSON.stringify(draft) !== JSON.stringify(current)
+
+  function submit(event: FormEvent) {
+    event.preventDefault()
+    update.mutate(draft, { onSuccess: (saved) => setDraft(saved) })
+  }
+
+  return (
+    <Card className="glass border-border/60">
+      <CardContent className="space-y-4 p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="font-heading text-base font-semibold">Welcome offer</h2>
+            <p className="text-xs text-muted-foreground">
+              A personal discount on every plan for new accounts that have not bought yet. The countdown starts at sign-up.
+            </p>
+          </div>
+          <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs ${current.enabled ? 'bg-emerald-400/20 text-emerald-600 dark:text-emerald-300' : 'bg-muted text-muted-foreground'}`}>
+            {current.enabled ? 'Active' : 'Inactive'}
+          </span>
+        </div>
+        <form onSubmit={submit} className="space-y-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={draft.enabled} onChange={(e) => setDraft({ ...draft, enabled: e.target.checked })} />
+            Show the offer to new accounts
+          </label>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="space-y-2">
+              <Label htmlFor="promo-code">Code</Label>
+              <Input id="promo-code" value={draft.code} onChange={(e) => setDraft({ ...draft, code: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="promo-percent">Discount (%)</Label>
+              <Input id="promo-percent" type="number" min={1} max={90} step={1} value={draft.percent} onChange={(e) => setDraft({ ...draft, percent: Number(e.target.value) })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="promo-window">Window (hours)</Label>
+              <Input id="promo-window" type="number" min={1} max={168} step={1} value={draft.window_hours} onChange={(e) => setDraft({ ...draft, window_hours: Number(e.target.value) })} />
+            </div>
+          </div>
+          <Button type="submit" disabled={!valid || !changed || update.isPending}>
+            Save offer
           </Button>
         </form>
       </CardContent>

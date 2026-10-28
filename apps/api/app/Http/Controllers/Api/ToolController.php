@@ -57,12 +57,12 @@ class ToolController extends Controller
                 'choices' => $tool['choices'] ?? [],
                 'voices' => config('virgoai.voices', []),
                 'ready' => collect($models)->contains(fn ($model) => $model->usable),
-                'models' => collect($models)->map(fn ($model) => [
+                // Only models that can run are listed. Why one cannot run is for the owner, in the admin console.
+                'models' => collect($models)->filter(fn ($model) => $model->usable)->map(fn ($model) => [
                     'key' => $model->key,
                     'name' => $model->name,
                     'provider_key' => $model->providerKey,
-                    'usable' => $model->usable,
-                    'reason' => $model->reason,
+                    'usable' => true,
                     'price_label' => $model->priceLabel,
                 ])->values(),
             ];
@@ -96,7 +96,7 @@ class ToolController extends Controller
             'script_type' => ['nullable', 'string', Rule::in(DirectorSkill::SCRIPT_TYPES)],
             'skill' => ['nullable', 'string', Rule::in(DirectorSkill::SKILLS)],
             'image_url' => ['nullable', 'string', 'max:2048', $tool === 'image' ? new OwnedReference : 'url:https'],
-            'resolution' => ['nullable', 'string', Rule::in(['480p', '720p', '1080p'])],
+            'resolution' => ['nullable', 'string', Rule::in(['720p', '1080p'])],
             'skill_key' => ['nullable', 'string', Rule::in(SkillLibrary::keys())],
             'styles' => ['nullable', 'array'],
             'styles.environment' => ['nullable', 'string', Rule::in(StylePresets::keys('environment'))],

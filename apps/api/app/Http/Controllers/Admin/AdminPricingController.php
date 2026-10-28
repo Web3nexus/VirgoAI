@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Billing\Money;
 use App\Billing\PriceSync;
+use App\Billing\PersonalPromo;
 use App\Billing\PricingSettings;
 use App\Http\Controllers\Controller;
 use App\Models\AdminAuditLog;
@@ -15,11 +16,12 @@ use RuntimeException;
 
 class AdminPricingController extends Controller
 {
-    public function show(PricingSettings $settings): JsonResponse
+    public function show(PricingSettings $settings, PersonalPromo $promo): JsonResponse
     {
         return response()->json([
             'margin_percent' => $settings->marginPercent(),
             'kept_share_percent' => $settings->keptShare(),
+            'promo' => $promo->config(),
             'prices' => ModelPrice::query()->orderBy('provider_key')->orderBy('model_key')->orderBy('unit')->get()
                 ->map(fn (ModelPrice $price) => [
                     'id' => $price->id,
@@ -37,7 +39,7 @@ class AdminPricingController extends Controller
     public function updateMargin(Request $request, PricingSettings $settings): JsonResponse
     {
         $data = $request->validate([
-            'margin_percent' => ['required', 'integer', 'between:0,500'],
+            'margin_percent' => ['required', 'integer', 'between:'.(int) config('pricing.min_margin_percent', 40).',500'],
         ]);
 
         $before = $settings->marginPercent();
@@ -45,6 +47,23 @@ class AdminPricingController extends Controller
         AdminAuditLog::record($request->user(), 'pricing.margin', null, ['from' => $before, 'to' => $data['margin_percent']]);
 
         return response()->json(['margin_percent' => $settings->marginPercent(), 'kept_share_percent' => $settings->keptShare()]);
+    }
+
+    /** The personal discount for new accounts. Turning it off hides it at once; nothing is deleted. */
+    public function updatePromo(Request $request, PersonalPromo $promo): JsonResponse
+    {
+        $data = $request->validate([
+            'enabled' => ['required', 'boolean'],
+            'code' => ['required', 'string', 'max:32', 'regex:/^[A-Za-z0-9_]+$/'],
+            'percent' => ['required', 'integer', 'between:1,90'],
+            'window_hours' => ['required', 'integer', 'between:1,168'],
+        ]);
+
+        $before = $promo->config();
+        AppSetting::write(PersonalPromo::SETTING_KEY, $data);
+        AdminAuditLog::record($request->user(), 'pricing.promo', null, ['from' => $before, 'to' => $data]);
+
+        return response()->json($promo->config());
     }
 
     /** Set a price by hand. It is marked `admin` so no sync overwrites it. */

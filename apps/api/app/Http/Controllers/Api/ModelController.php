@@ -22,14 +22,17 @@ class ModelController extends Controller
             $groups[$name] = [
                 'default' => ModelDefaults::defaultFor($name),
                 // The echo adapter is a dev stub. It is not a model a user can pick.
+                // Only models that can run are listed. Why one cannot run is for the owner, in the admin console.
                 'models' => array_values(array_map(fn (ToolModelOption $option) => [
                     'key' => $option->key,
                     'name' => $option->name,
                     'provider_key' => $option->providerKey,
-                    'usable' => $option->usable,
-                    'reason' => $option->reason,
+                    'usable' => true,
                     'price_label' => $option->priceLabel,
-                ], array_filter($router->describe($capability), fn (ToolModelOption $option) => $option->providerKey !== 'echo'))),
+                ], array_filter(
+                    $router->describe($capability),
+                    fn (ToolModelOption $option) => $option->providerKey !== 'echo' && $option->usable,
+                ))),
             ];
         }
 

@@ -2,6 +2,8 @@
 
 use App\Models\Project;
 use App\Models\User;
+use App\Models\WorkflowTask;
+use App\Workflows\WorkflowTemplates;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -16,6 +18,19 @@ it('starts a workflow for a project', function () {
         ->assertJsonPath('data.status', 'awaiting_approval')
         ->assertJsonCount(4, 'data.tasks')
         ->assertJsonCount(1, 'data.approvals');
+});
+
+it('returns the task dependency edges with the workflow', function () {
+    $response = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/v1/projects/{$this->project->id}/start")
+        ->assertOk();
+
+    $taskIds = collect($response->json('data.tasks'))->pluck('id');
+    $edges = collect($response->json('data.dependencies'));
+
+    expect($edges)->not->toBeEmpty()
+        ->and($edges->every(fn ($edge) => $taskIds->contains($edge['task_id'])
+            && $taskIds->contains($edge['depends_on_task_id'])))->toBeTrue();
 });
 
 it('rejects an invalid automation mode', function () {
@@ -117,3 +132,78 @@ it('requires authentication for workflow endpoints', function () {
     $this->postJson("/api/v1/projects/{$this->project->id}/start")->assertUnauthorized();
     $this->getJson("/api/v1/projects/{$this->project->id}/workflow")->assertUnauthorized();
 });
+
+it('sets instructions for a pending model stage', function () {
+    $start = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/v1/projects/{$this->project->id}/start", [
+            'template_key' => 'content_pipeline',
+        ])
+        ->assertOk();
+
+    $task = collect($start->json('data.tasks'))->firstWhere('key', 'script');
+    expect($task['prompt_editable'])->toBeTrue();
+
+    $this->actingAs($this->user, 'sanctum')
+        ->patchJson("/api/v1/workflows/{$start->json('data.id')}/tasks/{$task['id']}", [
+            'prompt' => '  Keep the script under 60 seconds.  ',
+        ])
+        ->assertOk();
+
+    expect(WorkflowTask::find($task['id'])->input['prompt'])->toBe('Keep the script under 60 seconds.');
+});
+
+it('restores the template instructions when the prompt is cleared', function () {
+    $start = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/v1/projects/{$this->project->id}/start", [
+            'template_key' => 'content_pipeline',
+        ]);
+    $task = collect($start->json('data.tasks'))->firstWhere('key', 'script');
+    $default = $task['prompt'];
+
+    $this->actingAs($this->user, 'sanctum')
+        ->patchJson("/api/v1/workflows/{$start->json('data.id')}/tasks/{$task['id']}", ['prompt' => 'Short'])
+        ->assertOk();
+    $cleared = $this->actingAs($this->user, 'sanctum')
+        ->patchJson("/api/v1/workflows/{$start->json('data.id')}/tasks/{$task['id']}", ['prompt' => ' '])
+        ->assertOk();
+
+    $restored = collect($cleared->json('data.tasks'))->firstWhere('key', 'script');
+    expect($restored['prompt'])->toBe($default)
+        ->and(WorkflowTask::find($task['id'])->input['prompt'])->toBe($default);
+});
+
+it('refuses instructions for a stage that has already started', function () {
+    $start = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/v1/projects/{$this->project->id}/start", [
+            'template_key' => 'content_pipeline',
+        ]);
+    $story = collect($start->json('data.tasks'))->firstWhere('key', 'story');
+
+    $this->actingAs($this->user, 'sanctum')
+        ->patchJson("/api/v1/workflows/{$start->json('data.id')}/tasks/{$story['id']}", ['prompt' => 'Too late'])
+        ->assertStatus(409);
+});
+
+it('refuses instructions for a stage that does not run a model', function () {
+    $start = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/v1/projects/{$this->project->id}/start");
+    $task = collect($start->json('data.tasks'))->firstWhere('key', 'script');
+
+    $this->actingAs($this->user, 'sanctum')
+        ->patchJson("/api/v1/workflows/{$start->json('data.id')}/tasks/{$task['id']}", ['prompt' => 'Nope'])
+        ->assertStatus(422);
+});
+
+it('does not let another user change a run', function () {
+    $start = $this->actingAs($this->user, 'sanctum')
+        ->postJson("/api/v1/projects/{$this->project->id}/start", [
+            'template_key' => 'content_pipeline',
+        ]);
+    $task = collect($start->json('data.tasks'))->firstWhere('key', 'script');
+
+    $stranger = User::factory()->create();
+    $this->actingAs($stranger, 'sanctum')
+        ->patchJson("/api/v1/workflows/{$start->json('data.id')}/tasks/{$task['id']}", ['prompt' => 'Mine now'])
+        ->assertForbidden();
+});
+

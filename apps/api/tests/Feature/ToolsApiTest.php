@@ -59,11 +59,12 @@ it('lists every tool with its models and whether each can run', function () {
         ->assertOk()
         ->assertJsonCount(6, 'data');
 
+    // A model that cannot run is not listed for users, and its reason is never sent to them.
     $image = collect($response->json('data'))->firstWhere('key', 'image');
     expect($image['ready'])->toBeFalse();
-    expect($image['models'][0]['key'])->toBe('fal-ai/gpt-image-1.5');
-    expect($image['models'][0]['usable'])->toBeFalse();
-    expect($image['models'][0]['reason'])->toContain('Credentials are missing');
+    expect($image['models'])->toBe([]);
+    expect(json_encode($response->json()))->not->toContain('Credentials are missing')
+        ->and(json_encode($response->json()))->not->toContain('reason');
 });
 
 it('runs the story tool on a registered text model and saves the result', function () {
@@ -134,9 +135,8 @@ it('never routes an image job to the text-only echo model', function () {
         ->getJson('/api/v1/tools')
         ->json('data'))->firstWhere('key', 'image');
 
-    $echo = collect($image['models'])->firstWhere('key', 'echo-1-image');
-    expect($echo['usable'])->toBeFalse();
-    expect($echo['reason'])->toContain('cannot do Image generation');
+    // The adapter declares no image capability, so the model is not offered to users at all.
+    expect(collect($image['models'])->firstWhere('key', 'echo-1-image'))->toBeNull();
     expect($image['ready'])->toBeFalse();
 });
 

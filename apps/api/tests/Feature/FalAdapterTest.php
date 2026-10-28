@@ -109,7 +109,7 @@ it('submits a text-to-image job with the verified payload and returns it queued'
         && $request->hasHeader('Authorization', 'Key test-fal-key')
         && $request['prompt'] === 'a brass compass on a wet table'
         && $request['image_size'] === '1024x1536'
-        && $request['quality'] === 'medium'
+        && $request['quality'] === 'high'
         && $request['num_images'] === 1
         && $request['output_format'] === 'png');
 });
@@ -143,12 +143,13 @@ it('submits an image-to-video job with the verified Seedance payload', function 
         && $request['generate_audio'] === true);
 });
 
-it('clamps a Seedance duration to 4 to 15 seconds', function () {
+it('refuses a Seedance duration outside 4 to 15 seconds before any HTTP call', function () {
     Http::fake([FAL_VIDEO_URL => Http::response(falSubmitResponse('bytedance/seedance-2.0/image-to-video'))]);
 
-    (new FalAdapter)->generate(videoRequest(['duration' => 60, 'generate_audio' => false]));
+    $result = (new FalAdapter)->generate(videoRequest(['duration' => 60, 'generate_audio' => false]));
 
-    Http::assertSent(fn ($request) => $request['duration'] === '15' && $request['generate_audio'] === false);
+    expect($result->ok)->toBeFalse()->and($result->error)->toContain('4 and 15 seconds');
+    Http::assertNothingSent();
 });
 
 it('refuses video without a reference image before any HTTP call', function () {

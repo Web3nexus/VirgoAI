@@ -52,6 +52,13 @@ class WorkflowResource extends JsonResource
                 'title' => $this->project->title,
             ]),
             'tasks' => WorkflowTaskResource::collection($this->whenLoaded('tasks')),
+            // Edges of the task graph: each row says task_id waits for depends_on_task_id.
+            'dependencies' => $this->whenLoaded('dependencies', fn () => $this->dependencies
+                ->map(fn ($edge) => [
+                    'task_id' => $edge->task_id,
+                    'depends_on_task_id' => $edge->depends_on_task_id,
+                ])
+                ->values()),
             'approvals' => ApprovalRequestResource::collection($this->whenLoaded('approvalRequests')),
         ];
     }

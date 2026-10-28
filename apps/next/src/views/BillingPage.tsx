@@ -136,6 +136,7 @@ export function BillingPage() {
                 key={plan.key}
                 plan={plan}
                 interval={interval}
+                offer={billing.promo?.plans[plan.key] ? { percent: billing.promo.percent, ...billing.promo.plans[plan.key] } : null}
                 action={
                   <Button
                     className="w-full"

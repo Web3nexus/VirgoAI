@@ -70,7 +70,8 @@ class Ffmpeg
      */
     public function normalize(string $source, string $destination, int $width, int $height): void
     {
-        $filter = sprintf('scale=%d:%d:force_original_aspect_ratio=increase,crop=%d:%d,setsar=1', $width, $height, $width, $height);
+        // Lanczos keeps edges sharper than the default scaler when a 720p render is stretched to a 1080p frame.
+        $filter = sprintf('scale=%d:%d:force_original_aspect_ratio=increase:flags=lanczos,crop=%d:%d,setsar=1', $width, $height, $width, $height);
 
         $this->run([
             $this->ffmpeg, '-y', '-i', $source,

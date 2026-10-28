@@ -16,7 +16,7 @@ function ToolStatus({ tool }: { tool: StudioTool }) {
       </p>
     )
   }
-  const reason = tool.models[0]?.reason ?? 'No model is registered for this tool yet.'
+  const reason = 'Not available right now.'
   return (
     <p className="flex items-start gap-1.5 text-xs text-amber-300">
       <AlertCircle className="mt-px size-3.5 shrink-0" /> {reason}

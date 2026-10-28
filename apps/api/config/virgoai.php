@@ -86,6 +86,35 @@ return [
         'tick_seconds' => (int) env('PRODUCTION_TICK_SECONDS', 15),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Director Lab films
+    |--------------------------------------------------------------------------
+    |
+    | A film is planned as chapters of up to ten minutes. Each chapter is a list of takes of 4 to 15 seconds, the
+    | longest call Seedance accepts. Takes are sent in a window, so a long film does not flood the queue.
+    |
+    */
+    'films' => [
+        'chapter_seconds' => (int) env('FILM_CHAPTER_SECONDS', 600),
+        'take_max_seconds' => 15,
+        'take_min_seconds' => 4,
+        'min_length_seconds' => 15,
+        'max_length_seconds' => (int) env('FILM_MAX_LENGTH_SECONDS', 3600),
+        'max_cast' => 6,
+        'max_locations' => 5,
+        // Takes sent to fal at once for one film.
+        'max_in_flight' => (int) env('FILM_MAX_IN_FLIGHT', 16),
+        // A take that fails is sent again this many times in total before the film fails.
+        'max_take_attempts' => 2,
+        // Takes joined per tick during assembly, so one tick never runs long.
+        'normalize_batch' => 6,
+        'max_wait_seconds' => (int) env('FILM_MAX_WAIT', 14400),
+        'tick_seconds' => (int) env('FILM_TICK_SECONDS', 15),
+        // The most a film may reserve, in micro-dollars at the sell price ($500 by default).
+        'max_price_micros' => (int) env('FILM_MAX_PRICE_MICROS', 500_000_000),
+    ],
+
     'clips' => [
         'ffmpeg' => env('FFMPEG_BINARY', 'ffmpeg'),
         'ffprobe' => env('FFPROBE_BINARY', 'ffprobe'),

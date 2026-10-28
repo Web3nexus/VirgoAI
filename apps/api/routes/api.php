@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BillingController;
 use App\Http\Controllers\Api\ClipController;
 use App\Http\Controllers\Api\EditController;
+use App\Http\Controllers\Api\FilmController;
 use App\Http\Controllers\Api\GenerationController;
 use App\Http\Controllers\Api\PaymentWebhookController;
 use App\Http\Controllers\Api\PricingController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\Api\ProductionController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\ReferenceController;
+use App\Http\Controllers\Api\RateCardController;
 use App\Http\Controllers\Api\RegistryController;
 use App\Http\Controllers\Api\RemixController;
 use App\Http\Controllers\Api\ModelController;
@@ -80,6 +82,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/productions/{production}', [ProductionController::class, 'show']);
         Route::delete('/productions/{production}', [ProductionController::class, 'destroy']);
 
+        // The Director Lab: long films in chapters, planned by a director, with a board of references.
+        Route::get('/films', [FilmController::class, 'index']);
+        Route::post('/films', [FilmController::class, 'store'])->middleware('throttle:10,1');
+        Route::get('/films/{film}', [FilmController::class, 'show']);
+        Route::post('/films/{film}/cancel', [FilmController::class, 'cancel']);
+
         // A reference image for a run. The provider fetches it, so it is stored where it can be reached.
         Route::post('/uploads/reference', [ReferenceController::class, 'store'])->middleware('throttle:30,1');
 
@@ -114,11 +122,14 @@ Route::prefix('v1')->group(function () {
         Route::post('/workflows/{workflow}/pause', [WorkflowController::class, 'pause']);
         Route::post('/workflows/{workflow}/resume', [WorkflowController::class, 'resume']);
         Route::post('/workflows/{workflow}/cancel', [WorkflowController::class, 'cancel']);
+        Route::patch('/workflows/{workflow}/tasks/{task}', [WorkflowController::class, 'updateTask']);
 
         Route::post('/approvals/{approval}/approve', [ApprovalController::class, 'approve']);
         Route::post('/approvals/{approval}/revise', [ApprovalController::class, 'revise']);
         Route::post('/approvals/{approval}/regenerate', [ApprovalController::class, 'regenerate']);
         Route::post('/approvals/{approval}/reject', [ApprovalController::class, 'reject']);
+
+        Route::get('/rate-card', [RateCardController::class, 'show']);
 
         Route::get('/providers', [RegistryController::class, 'providers']);
         Route::get('/models', [RegistryController::class, 'models']);
@@ -142,7 +153,9 @@ Route::prefix('v1')->group(function () {
             Route::post('/providers/{provider}/sync', [AdminProviderController::class, 'sync']);
 
             Route::get('/pricing', [AdminPricingController::class, 'show']);
+            Route::get('/rate-card', [RateCardController::class, 'owner']);
             Route::patch('/pricing/margin', [AdminPricingController::class, 'updateMargin']);
+            Route::patch('/pricing/promo', [AdminPricingController::class, 'updatePromo']);
             Route::patch('/pricing/prices/{price}', [AdminPricingController::class, 'updatePrice']);
             Route::post('/pricing/sync', [AdminPricingController::class, 'sync']);
 

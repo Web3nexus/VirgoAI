@@ -49,10 +49,28 @@ export type BillingPurchase = {
 
 export type CheckoutResult = { purchase: BillingPurchase; checkout_url: string; message: string }
 
+/** A plan's price with the welcome discount applied. */
+export type PlanOffer = {
+  percent: number
+  monthly_usd: number
+  yearly_usd: number
+  yearly_per_month_usd: number
+}
+
+/** The welcome discount for this account, or null when it does not apply. */
+export type PersonalPromo = {
+  code: string
+  percent: number
+  /** When the window closes. The countdown runs to this time. */
+  ends_at: string
+  plans: Record<string, Omit<PlanOffer, 'percent'>>
+}
+
 export type BillingState = {
   balance_tokens: number
   subscription_tokens: number
   purchased_tokens: number
+  promo: PersonalPromo | null
   country_code: string | null
   suggested_country: string | null
   /** The provider the country routes to, or null until a country is set. */

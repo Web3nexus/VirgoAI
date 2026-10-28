@@ -25,6 +25,7 @@ import {
 import { FollowUsMenu } from '@/components/notifications/FollowUsMenu'
 import { NotificationsMenu } from '@/components/notifications/NotificationsMenu'
 import { Logo } from '@/components/brand/Logo'
+import { WelcomeOfferDialog } from '@/components/billing/WelcomeOfferDialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
@@ -50,6 +51,7 @@ type NavItem = {
 const HOME: NavItem[] = [
   { to: '/app', label: 'Home', icon: Home01Icon, end: true },
   { to: '/app/projects', label: 'Projects', icon: Folder01Icon },
+  { to: '/app/lab', label: 'Director Lab', icon: VideoAiIcon },
   { to: '/app/clips', label: 'Clips', icon: Film01Icon },
   { to: '/app/activity', label: 'Activity', icon: Notification01Icon },
   { to: '/app/billing', label: 'Billing', icon: CreditCardIcon },
@@ -227,6 +229,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {children}
           </div>
         </main>
+        <WelcomeOfferDialog />
       </div>
     </div>
   )

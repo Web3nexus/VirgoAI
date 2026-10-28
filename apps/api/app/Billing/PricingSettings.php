@@ -11,9 +11,17 @@ class PricingSettings
 {
     public const MARGIN_KEY = 'margin_percent';
 
+    /** The margin in use. Never below the floor, even if a lower value was stored before the floor existed. */
     public function marginPercent(): int
     {
-        return (int) AppSetting::read(self::MARGIN_KEY, config('pricing.default_margin_percent', 40));
+        $stored = (int) AppSetting::read(self::MARGIN_KEY, config('pricing.default_margin_percent', 40));
+
+        return max($this->floorPercent(), $stored);
+    }
+
+    public function floorPercent(): int
+    {
+        return (int) config('pricing.min_margin_percent', 40);
     }
 
     /** Sell price for a provider cost. Rounded up so the margin is never short. */

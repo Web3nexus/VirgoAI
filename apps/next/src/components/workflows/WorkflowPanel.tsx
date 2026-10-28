@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { OutputView } from './OutputView'
+import { WorkflowGraph } from './WorkflowGraph'
 import {
   AlertTriangle,
   Ban,
@@ -193,6 +194,7 @@ function ActiveWorkflow({ projectId, workflow }: { projectId: string; workflow: 
   const resume = useWorkflowAction(projectId, 'resume')
   const cancel = useWorkflowAction(projectId, 'cancel')
 
+  const [view, setView] = useState<'graph' | 'list'>('graph')
   const pendingApproval = workflow.approvals.find((a) => a.status === 'pending')
   const progress = workflow.progress
   const canPause = ['running', 'queued', 'awaiting_approval'].includes(workflow.status)
@@ -260,11 +262,30 @@ function ActiveWorkflow({ projectId, workflow }: { projectId: string; workflow: 
           </div>
         )}
 
-        <ul className="divide-y divide-border/50">
-          {workflow.tasks.map((task) => (
-            <TaskRow key={task.id} task={task} />
+        <div className="flex w-fit gap-1 rounded-lg bg-ink-2 p-1" role="group" aria-label="Stage view">
+          {(['graph', 'list'] as const).map((option) => (
+            <Button
+              key={option}
+              size="sm"
+              variant={view === option ? 'secondary' : 'ghost'}
+              aria-pressed={view === option}
+              onClick={() => setView(option)}
+              className="capitalize"
+            >
+              {option}
+            </Button>
           ))}
-        </ul>
+        </div>
+
+        {view === 'graph' ? (
+          <WorkflowGraph projectId={projectId} workflow={workflow} />
+        ) : (
+          <ul className="divide-y divide-border/50">
+            {workflow.tasks.map((task) => (
+              <TaskRow key={task.id} task={task} />
+            ))}
+          </ul>
+        )}
 
         {pendingApproval && <PendingApproval projectId={projectId} approval={pendingApproval} />}
 

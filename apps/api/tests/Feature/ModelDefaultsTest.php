@@ -35,10 +35,10 @@ it('lists the studio models by what they make, with a default for each', functio
         ->and($data['image']['default'])->toBe(FalEndpoints::IMAGE_TEXT)
         ->and($data['text']['default'])->toBe('claude-sonnet-5-5');
 
+    // Only models that can run are listed, so with no provider keys configured the lists are empty; the echo stub is never listed.
     $videoKeys = collect($data['video']['models'])->pluck('key');
-    expect($videoKeys)->toContain(FalEndpoints::VIDEO_HAILUO, FalEndpoints::VIDEO_KLING)
-        ->and($videoKeys)->not->toContain('echo-1')
-        ->and(collect($data['image']['models'])->pluck('key'))->toContain(FalEndpoints::IMAGE_FLUX_SCHNELL);
+    expect($videoKeys)->not->toContain('echo-1')
+        ->and(collect($data['image']['models'])->pluck('key'))->not->toContain('echo-1');
 });
 
 it('refuses a full video with a video model that is not offered', function () {

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Media\MediaRemover;
+use App\Models\Film;
 use App\Models\Generation;
 use App\Models\Production;
 use DomainException;
@@ -35,6 +36,22 @@ class PruneMedia extends Command
                         $removed++;
                     } catch (DomainException) {
                         // Still rendering: left for the next run.
+                    }
+                }
+            });
+
+        Film::query()
+            ->whereNull('media_deleted_at')
+            ->whereNotNull('output_path')
+            ->where('created_at', '<', $cutoff)
+            ->whereIn('status', Film::TERMINAL)
+            ->chunkById(100, function ($films) use ($remover, &$removed) {
+                foreach ($films as $film) {
+                    try {
+                        $remover->removeFilm($film);
+                        $removed++;
+                    } catch (DomainException) {
+                        // Still being made: left for the next run.
                     }
                 }
             });

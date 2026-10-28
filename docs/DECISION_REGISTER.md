@@ -253,3 +253,60 @@ record in [`DECISIONS/`](./DECISIONS).
 - **Decision**: One Next.js app (`apps/next`) serves `/` (pre-rendered landing), `/app` (studio), and the public and owner pages. Screens moved unchanged.
 - **Consequences**: `apps/web` and `apps/marketing` are retired but kept until the team deletes them.
 - **Rationale**: [`DECISIONS/0017-nextjs-single-app.md`](./DECISIONS/0017-nextjs-single-app.md).
+
+---
+
+## DEC-0018: Read-Only Workflow Graph
+
+- **Status**: ACCEPTED
+- **Date**: 2026-10-20
+- **Context**: The production page lists stages in a flat list, which hides how stages depend on each other. The API did not return the dependency edges.
+- **Decision**: Add a Graph view of the workflow on the production page, built with React Flow. The workflow response now includes `dependencies`. The graph is read-only.
+- **Consequences**: No engine change. Editing the graph needs DB-backed templates and a new decision.
+- **Rationale**: [`DECISIONS/0018-read-only-workflow-graph.md`](./DECISIONS/0018-read-only-workflow-graph.md).
+
+---
+
+## DEC-0019: Per-Run Stage Instructions
+
+- **Status**: ACCEPTED
+- **Date**: 2026-10-20
+- **Context**: Users want to change a stage before it runs, without moving templates out of code.
+- **Decision**: A user can edit the instructions of a pending model stage in one run. Stage order and wiring stay fixed. The server decides which stages are editable.
+- **Consequences**: Edits last only for that run. Rewiring and re-running from a node need a separate decision.
+- **Rationale**: [`DECISIONS/0019-per-run-stage-instructions.md`](./DECISIONS/0019-per-run-stage-instructions.md).
+
+---
+
+## DEC-0020: Director Lab — Long-Form Video on Verified fal Limits
+
+- **Status**: PROPOSED
+- **Date**: 2026-10-30
+- **Context**: The full-video pipeline is capped at six 5-second scenes (30 seconds). Users want one to three
+  minutes without editing. fal's largest single call is 15 seconds (Seedance 2.0, Kling v3), so longer films
+  must chain calls. Only Seedance reference-to-video and Kling v3 (`elements`, `multi_prompt`) take character
+  references in a way that supports consistency.
+- **Decision**: Default long-form engine is Seedance 2.0 reference-to-video (cast reference sheets in
+  `image_urls`, native audio). Kling v3 standard is the cheaper selectable engine. Takes are 4–15 seconds, chained
+  by last frame within a scene, with scenes in parallel. The user sets a length (15 to 180 seconds), not a scene
+  count. Quotes are shown and reserved before rendering. Veo 3 and Hailuo are not used for long-form.
+- **Consequences**: About $18 per minute at 720p on Seedance, before images and LLM steps. Seedance per-token
+  billing must be confirmed by a live call before pricing is final. Continuity and consistency are unproven until a
+  live multi-take test passes. Build plan and model table: [`DECISIONS/0020-director-lab-long-form.md`](./DECISIONS/0020-director-lab-long-form.md).
+
+---
+
+## DEC-0021: Credit Rate Card and Margin Floor
+
+- **Status**: ACCEPTED
+- **Date**: 2026-10-30
+- **Context**: The stored fal price is one number per model, so it under-priced GPT Image at landscape and vertical
+  sizes (about 32% under cost), Seedance at 1080p (about 55% under cost), and Veo and Hailuo, which bill rounded-up
+  seconds. The margin could be set to zero.
+- **Decision**: Price each fal call from a rate table in `config/pricing.php` that depends on the size, quality,
+  resolution and billed seconds sent, and refuse any call the table does not cover. Sell price is cost plus margin,
+  rounded up, with a 40% margin floor. One credit is $0.001 of sell price. A film is priced as the sum of its director,
+  board and take parts. Failed or stopped work is charged only if it was sent to a provider.
+- **Consequences**: Charges now match provider costs. Several rates are unverified and listed in `docs/PRICING.md`. The
+  one-hour film at 720p ($1,531) exceeds the default $500 per-film cap, so it is refused until the owner raises the cap.
+  Rationale: [`DECISIONS/0021-credit-rate-card.md`](./DECISIONS/0021-credit-rate-card.md).

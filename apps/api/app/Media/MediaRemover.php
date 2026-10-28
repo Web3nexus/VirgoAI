@@ -2,6 +2,7 @@
 
 namespace App\Media;
 
+use App\Models\Film;
 use App\Models\Generation;
 use App\Models\Production;
 use DomainException;
@@ -30,6 +31,30 @@ final class MediaRemover
 
         $production->scenes()->update(['keyframe_path' => null, 'keyframe_url' => null, 'clip_path' => null]);
         $production->forceFill(['output_path' => null, 'media_deleted_at' => now()])->save();
+    }
+
+    /** Delete a film's board, takes, chapters and joined file. The film's record and its cost stay. */
+    public function removeFilm(Film $film): void
+    {
+        if (! $film->isTerminal()) {
+            throw new DomainException('This film is still being made. You can delete it once it finishes.');
+        }
+
+        if ($film->output_path !== null) {
+            Storage::disk('public')->delete($film->output_path);
+        }
+        Storage::disk('public')->deleteDirectory("films/{$film->id}");
+
+        if ($film->generation_id !== null) {
+            $generation = Generation::query()->find($film->generation_id);
+            if ($generation !== null && $generation->media_deleted_at === null) {
+                $this->removeGeneration($generation);
+            }
+        }
+
+        $film->takes()->update(['clip_url' => null, 'clip_path' => null, 'normalized_path' => null]);
+        $film->assets()->update(['image_url' => null, 'image_path' => null]);
+        $film->forceFill(['output_path' => null, 'media_deleted_at' => now()])->save();
     }
 
     public function removeGeneration(Generation $generation): void

@@ -2,22 +2,25 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import { CheckmarkCircle02Icon } from '@hugeicons/core-free-icons'
 import { cn } from '@/lib/utils'
 import { usd } from '@/lib/money'
-import type { Interval, PublicPlan } from '@/features/billing/types'
+import type { Interval, PlanOffer, PublicPlan } from '@/features/billing/types'
 
 const NUMBER = new Intl.NumberFormat('en-US')
 
-/** One plan in the pricing table. The highlighted plan gets the glow and the badge. */
+/** One plan in the pricing table. The highlighted plan gets the glow and the badge. An offer shows the discounted price beside the list price. */
 export function PlanCard({
   plan,
   interval,
   action,
+  offer,
 }: {
   plan: PublicPlan
   interval: Interval
   action: React.ReactNode
+  offer?: PlanOffer | null
 }) {
   const yearly = interval === 'yearly'
-  const price = yearly ? plan.yearly_per_month_usd : plan.monthly_usd
+  const listPrice = yearly ? plan.yearly_per_month_usd : plan.monthly_usd
+  const price = offer ? (yearly ? offer.yearly_per_month_usd : offer.monthly_usd) : listPrice
 
   return (
     <div
@@ -40,14 +43,20 @@ export function PlanCard({
       </div>
 
       <div className="mt-6">
-        <div className="flex items-end gap-1">
+        <div className="flex items-end gap-2">
+          {offer && (
+            <span className="pb-3 text-lg text-muted-foreground line-through decoration-muted-foreground/70">
+              {usd(listPrice, listPrice % 1 === 0 ? 0 : 2)}
+            </span>
+          )}
           <span className="font-heading text-5xl font-semibold tracking-tight">{usd(price, price % 1 === 0 ? 0 : 2)}</span>
           <span className="pb-2 text-sm text-muted-foreground">/ month</span>
         </div>
         <p className="mt-2 min-h-5 text-xs text-muted-foreground">
+          {offer && <span className="mr-1 font-medium text-emerald-300">{offer.percent}% off ·</span>}
           {yearly ? (
             <>
-              Billed {usd(plan.yearly_usd, 0)} yearly ·{' '}
+              Billed {usd(offer ? offer.yearly_usd : plan.yearly_usd, 0)} yearly ·{' '}
               <span className="text-emerald-300">save {plan.yearly_savings_percent}%</span>
             </>
           ) : (

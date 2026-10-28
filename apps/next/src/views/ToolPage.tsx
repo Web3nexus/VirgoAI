@@ -27,7 +27,6 @@ import type { Generation, StudioTool } from '@/features/tools/types'
 import { formatTime } from '@/features/workflows/timeline'
 import { useSkills } from '@/features/skills/hooks'
 import { usd } from '@/lib/money'
-import { cn } from '@/lib/utils'
 
 const NONE = '__none__'
 
@@ -45,7 +44,7 @@ function ToolWorkspace({ tool }: { tool: StudioTool }) {
     const requested = searchParams.get('size')
     return requested && Object.keys(PROJECT_FORMAT_INFO).includes(requested) ? requested : tool.default_size
   })
-  const [resolution, setResolution] = useState<'480p' | '720p' | '1080p'>('720p')
+  const [resolution, setResolution] = useState<'720p' | '1080p'>('720p')
   const [projectId, setProjectId] = useState<string>(NONE)
   const choiceEntries = Object.entries(tool.choices ?? {})
   const [choices, setChoices] = useState<Record<string, string>>(() => {
@@ -133,8 +132,8 @@ function ToolWorkspace({ tool }: { tool: StudioTool }) {
                 ))}
               </SelectContent>
             </Select>
-            {selected && !selected.usable && (
-              <p className="text-xs text-amber-300">{selected.reason}</p>
+            {tool.models.length === 0 && (
+              <p className="text-xs text-amber-300">This tool is not available right now.</p>
             )}
             {selected?.usable && selected.provider_key === 'echo' && (
               <p className="text-xs text-muted-foreground">
@@ -148,26 +147,19 @@ function ToolWorkspace({ tool }: { tool: StudioTool }) {
 
           {choiceEntries.map(([key, choice]) => (
             <div key={key} className="space-y-2">
-              <Label>{choice.label}</Label>
-              <div role="radiogroup" aria-label={choice.label} className="grid gap-2">
-                {Object.entries(choice.values).map(([value, text]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    role="radio"
-                    aria-checked={choices[key] === value}
-                    onClick={() => setChoices((current) => ({ ...current, [key]: value }))}
-                    className={cn(
-                      'rounded-lg border px-3 py-2 text-left text-sm transition-colors',
-                      choices[key] === value
-                        ? 'border-brand/60 bg-brand/10 text-foreground'
-                        : 'border-border text-muted-foreground hover:text-foreground',
-                    )}
-                  >
-                    {text}
-                  </button>
-                ))}
-              </div>
+              <Label htmlFor={`tool-choice-${key}`}>{choice.label}</Label>
+              <Select value={choices[key]} onValueChange={(value: string | null) => setChoices((current) => ({ ...current, [key]: value ?? choice.default }))}>
+                <SelectTrigger id={`tool-choice-${key}`} className="w-full">
+                  <SelectValue>{choice.values[choices[key]] ?? choices[key]}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(choice.values).map(([value, text]) => (
+                    <SelectItem key={value} value={value}>
+                      {text}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           ))}
 
@@ -238,10 +230,9 @@ function ToolWorkspace({ tool }: { tool: StudioTool }) {
                 id="tool-quality"
                 className="h-9 w-full rounded-lg border border-border bg-background px-3 text-sm"
                 value={resolution}
-                onChange={(e) => setResolution(e.target.value as '480p' | '720p' | '1080p')}
+                onChange={(e) => setResolution(e.target.value as '720p' | '1080p')}
               >
-                <option value="480p">480p · faster</option>
-                <option value="720p">720p</option>
+                <option value="720p">720p · default</option>
                 <option value="1080p">1080p · sharpest</option>
               </select>
               <p className="text-xs text-muted-foreground">The video is fitted to the format above, at this quality.</p>

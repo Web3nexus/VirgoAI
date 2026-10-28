@@ -114,17 +114,37 @@ class ProductionService
         return $production;
     }
 
-    /** Give back the reservation and mark the production failed. */
+    /**
+     * Stop the production. Work already sent to fal is charged, because fal bills it. Work that was never sent is
+     * given back. The accounting is taken before the scenes are marked failed, because their status records what was sent.
+     */
     public function fail(Production $production, string $reason): void
     {
         $generation = Generation::query()->find($production->generation_id);
+
         if ($generation !== null) {
-            $this->wallet->refund($generation, 'Refunded: full video did not finish');
+            $this->wallet->settle($generation, $this->submittedQuote($production));
             $generation->forceFill(['status' => Generation::STATUS_FAILED, 'error' => $reason])->save();
         }
 
         $production->forceFill(['status' => 'failed', 'error' => $reason])->save();
         $production->scenes()->where('status', '!=', 'done')->update(['status' => 'failed']);
+    }
+
+    /**
+     * What the production has sent to a provider so far: the script, every keyframe that was started, and every
+     * motion clip that was started. A step that never started is not counted.
+     */
+    public function submittedQuote(Production $production): Quote
+    {
+        $scenes = $production->scenes()->get();
+        $keyframed = $scenes->whereIn('status', ['keyframing', 'keyframed', 'animating', 'done']);
+        $animated = $scenes->whereIn('status', ['animating', 'done']);
+
+        $price = (int) $production->script_price + (int) $keyframed->sum('keyframe_price') + (int) $animated->sum('motion_price');
+        $cost = (int) $production->script_cost + (int) $keyframed->sum('keyframe_cost') + (int) $animated->sum('motion_cost');
+
+        return new Quote($cost, $price, 'production', $scenes->count(), false);
     }
 
     public static function insufficient(InsufficientCredit|PriceUnavailable $e): string

@@ -61,6 +61,15 @@ export async function rejectApproval(id: string, notes?: string): Promise<Workfl
   return data.data
 }
 
+export async function updateTaskPrompt(
+  workflowId: string,
+  taskId: string,
+  prompt: string,
+): Promise<Workflow> {
+  const { data } = await api.patch<{ data: Workflow }>(`/workflows/${workflowId}/tasks/${taskId}`, { prompt })
+  return data.data
+}
+
 export async function getActivity(limit = 30): Promise<Workflow[]> {
   const { data } = await api.get<{ data: Workflow[] }>('/activity', { params: { limit } })
   return data.data

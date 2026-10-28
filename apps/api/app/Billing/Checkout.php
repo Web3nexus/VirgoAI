@@ -16,6 +16,8 @@ use DomainException;
  */
 class Checkout
 {
+    public function __construct(protected PersonalPromo $promo) {}
+
     public function plan(User $user, string $planKey, string $interval, string $provider): Purchase
     {
         if (! in_array($interval, [Subscription::INTERVAL_MONTHLY, Subscription::INTERVAL_YEARLY], true)) {
@@ -30,13 +32,16 @@ class Checkout
             ->exists();
 
         $yearly = $interval === Subscription::INTERVAL_YEARLY;
+        $list = $yearly ? $plan->yearly_micros : $plan->monthly_micros;
+        $offer = $this->promo->for($user);
 
         return Purchase::create([
             'user_id' => $user->id,
             'kind' => $renewing ? Purchase::KIND_RENEWAL : Purchase::KIND_SUBSCRIPTION,
             'item_key' => $plan->key,
             'interval' => $interval,
-            'amount_micros' => $yearly ? $plan->yearly_micros : $plan->monthly_micros,
+            // The welcome offer, when it applies, is recorded as the price the user is quoted.
+            'amount_micros' => $offer ? $this->promo->discounted($list, $offer['percent']) : $list,
             // A yearly plan adds its monthly credit each month, so the year is worth twelve months of credit.
             'credits_micros' => $yearly ? $plan->monthly_credit_micros * 12 : $plan->monthly_credit_micros,
             'status' => Purchase::STATUS_PENDING,

@@ -97,9 +97,17 @@ export type ModelPriceRow = {
   verified_at: string | null
 }
 
+export type PersonalPromoConfig = {
+  enabled: boolean
+  code: string
+  percent: number
+  window_hours: number
+}
+
 export type PricingResponse = {
   margin_percent: number
   kept_share_percent: number
+  promo: PersonalPromoConfig
   prices: ModelPriceRow[]
 }
 

@@ -48,6 +48,19 @@ export function useStartWorkflow(projectId: string) {
   })
 }
 
+export function useUpdateTaskPrompt(projectId: string) {
+  const invalidate = useInvalidateWorkflow(projectId)
+  return useMutation({
+    mutationFn: ({ workflowId, taskId, prompt }: { workflowId: string; taskId: string; prompt: string }) =>
+      workflowsApi.updateTaskPrompt(workflowId, taskId, prompt),
+    onSuccess: () => {
+      invalidate()
+      toast.success('Instructions saved')
+    },
+    onError: (error) => toast.error(apiErrorMessage(error)),
+  })
+}
+
 export function useWorkflowAction(
   projectId: string,
   action: 'pause' | 'resume' | 'cancel',

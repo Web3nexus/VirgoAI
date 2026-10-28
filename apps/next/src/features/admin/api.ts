@@ -19,6 +19,7 @@ import type {
   PricingResponse,
   PricingSyncResponse,
   ProviderRow,
+  PersonalPromoConfig,
   SystemResponse,
   SystemSettings,
   UserStatusFilter,
@@ -124,6 +125,11 @@ export async function fetchPricing(): Promise<PricingResponse> {
 
 export async function updateMargin(marginPercent: number): Promise<{ margin_percent: number; kept_share_percent: number }> {
   const { data } = await api.patch('/admin/pricing/margin', { margin_percent: marginPercent })
+  return data
+}
+
+export async function updatePromo(promo: PersonalPromoConfig): Promise<PersonalPromoConfig> {
+  const { data } = await api.patch<PersonalPromoConfig>('/admin/pricing/promo', promo)
   return data
 }
 

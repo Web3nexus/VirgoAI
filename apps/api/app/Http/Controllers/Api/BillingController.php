@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Billing\Checkout;
 use App\Billing\Money;
+use App\Billing\PersonalPromo;
 use App\Billing\Payments\PaddleGateway;
 use App\Billing\Payments\PaymentCheckout;
 use App\Billing\Payments\PaymentNotConfigured;
@@ -21,7 +22,7 @@ use Illuminate\Validation\ValidationException;
 class BillingController extends Controller
 {
     /** The signed-in user's wallet, plan, and purchases. */
-    public function show(Request $request): JsonResponse
+    public function show(Request $request, PersonalPromo $promo): JsonResponse
     {
         $user = $request->user();
         $subscription = Subscription::query()
@@ -36,6 +37,7 @@ class BillingController extends Controller
             'balance_tokens' => Money::toTokens((int) $user->balance_micros),
             'subscription_tokens' => Money::toTokens((int) $user->subscription_credit_micros),
             'purchased_tokens' => Money::toTokens(max(0, (int) $user->balance_micros - (int) $user->subscription_credit_micros)),
+            'promo' => $promo->for($user),
             'country_code' => $user->country_code,
             'suggested_country' => preg_match('/^[A-Z]{2}$/', $suggested) ? $suggested : null,
             'provider' => $user->country_code ? PaymentRouter::providerFor($user) : null,

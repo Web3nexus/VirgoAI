@@ -67,7 +67,7 @@ it('sells at cost plus the margin, rounded up', function () {
 it('prices a fal image run at the fal unit price times the image count', function () {
     priceRow('fal', 'fal-ai/gpt-image-1.5', 'image', 34_000);
 
-    $quote = app(PriceQuoter::class)->quote('fal', 'fal-ai/gpt-image-1.5', Capability::Image, 'a fox', ['size' => 'square_1_1'], []);
+    $quote = app(PriceQuoter::class)->quote('fal', 'fal-ai/gpt-image-1.5', Capability::Image, 'a fox', ['size' => 'square_1_1', 'quality' => 'medium'], []);
 
     expect($quote->costMicros)->toBe(34_000)
         ->and($quote->priceMicros)->toBe(47_600)
@@ -86,19 +86,20 @@ it('prices a Seedance run per second of video', function () {
         ['image_url' => 'https://v3b.fal.media/files/k.png'],
     );
 
-    expect($quote->costMicros)->toBe(1_814_400)
+    // The rate table sets this price: 720p at $0.3034 a second, six seconds. The synced price is only a fallback.
+    expect($quote->costMicros)->toBe(1_820_400)
         ->and($quote->quantity)->toBe(6.0)
         ->and($quote->unit)->toBe('second');
 });
 
 it('refuses a fal unit it cannot bill rather than guessing', function () {
-    priceRow('fal', 'fal-ai/gpt-image-1.5', 'gpu-second', 1_000);
+    priceRow('fal', 'fal-ai/flux/schnell', 'gpu-second', 1_000);
 
-    app(PriceQuoter::class)->quote('fal', 'fal-ai/gpt-image-1.5', Capability::Image, 'a fox', [], []);
+    app(PriceQuoter::class)->quote('fal', 'fal-ai/flux/schnell', Capability::Image, 'a fox', [], []);
 })->throws(PriceUnavailable::class, 'cannot price yet');
 
 it('refuses a fal model with no price yet', function () {
-    app(PriceQuoter::class)->quote('fal', 'fal-ai/gpt-image-1.5', Capability::Image, 'a fox', [], []);
+    app(PriceQuoter::class)->quote('fal', 'fal-ai/flux/schnell', Capability::Image, 'a fox', [], []);
 })->throws(PriceUnavailable::class, 'No price is set');
 
 it('refuses a Claude model with no price, and says where to set it', function () {

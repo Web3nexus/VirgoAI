@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 export type VideoQuality = '720p' | '1080p'
 
 const QUALITIES: { value: VideoQuality; note: string }[] = [
-  { value: '720p', note: 'Faster, lower cost' },
+  { value: '720p', note: 'Default · faster, lower cost' },
   { value: '1080p', note: 'Sharper, higher cost' },
 ]
 

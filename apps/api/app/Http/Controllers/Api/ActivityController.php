@@ -23,7 +23,7 @@ class ActivityController extends Controller
 
         $workflows = Workflow::query()
             ->whereHas('project', fn ($query) => $query->where('user_id', $request->user()->id))
-            ->with(['project:id,title', 'tasks', 'approvalRequests'])
+            ->with(['project:id,title', 'tasks', 'dependencies', 'approvalRequests'])
             ->latest('updated_at')
             ->limit($limit)
             ->get();

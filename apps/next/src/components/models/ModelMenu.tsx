@@ -90,7 +90,7 @@ function ModelColumn({ title, models, chosen, onChoose }: { title: string; model
                   model.usable ? 'bg-brand/15 text-foreground' : 'border border-border text-muted-foreground',
                 )}
               >
-                {model.usable ? (model.price_label ?? 'Ready') : 'Needs key'}
+                {model.price_label ?? 'Ready'}
               </span>
             </DropdownMenuItem>
           </li>

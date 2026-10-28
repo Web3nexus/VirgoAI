@@ -124,8 +124,11 @@ class Catalog
      */
     private function unitPrices(): array
     {
-        $image = ModelPrice::query()->where('provider_key', 'fal')->where('model_key', FalEndpoints::IMAGE_TEXT)->where('unit', 'image')->value('cost_micros');
-        $second = ModelPrice::query()->where('provider_key', 'fal')->where('model_key', FalEndpoints::VIDEO_IMAGE)->where('unit', 'second')->value('cost_micros');
+        // Plans promise the dearest image and the 720p second, so a plan never gives more than the cost allows.
+        $imageRange = FalRates::range(FalEndpoints::IMAGE_TEXT);
+        $secondRange = FalRates::range(FalEndpoints::VIDEO_IMAGE);
+        $image = $imageRange['max_micros'] ?? null;
+        $second = $secondRange['min_micros'] ?? null;
 
         $inputPrice = ModelPrice::query()->where('provider_key', 'anthropic')->where('model_key', 'claude-sonnet-5-5')->where('unit', 'input_mtok')->value('cost_micros');
         $outputPrice = ModelPrice::query()->where('provider_key', 'anthropic')->where('model_key', 'claude-sonnet-5-5')->where('unit', 'output_mtok')->value('cost_micros');

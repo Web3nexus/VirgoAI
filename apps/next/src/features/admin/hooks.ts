@@ -150,6 +150,10 @@ export function useUpdateMargin() {
   return useAdminMutation(adminApi.updateMargin, 'Margin saved')
 }
 
+export function useUpdatePromo() {
+  return useAdminMutation(adminApi.updatePromo, 'Welcome offer saved', [['admin', 'pricing']])
+}
+
 export function useUpdatePrice() {
   return useAdminMutation(
     ({ id, costUsd }: { id: number; costUsd: number }) => adminApi.updatePrice(id, costUsd),

@@ -34,6 +34,16 @@ class PriceLabel
             );
         }
 
+        if ($providerKey === 'fal' && ($range = FalRates::range($modelKey)) !== null) {
+            $noun = $range['unit'] === 'image' ? 'image' : 'second of video';
+            $low = Money::format($this->settings->sell($range['min_micros']), 3);
+            $high = Money::format($this->settings->sell($range['max_micros']), 3);
+
+            return $range['min_micros'] === $range['max_micros']
+                ? "{$low} per {$noun}"
+                : "{$low} to {$high} per {$noun}, by size and quality";
+        }
+
         if ($providerKey === 'fal') {
             $unit = $capability === Capability::Video ? 'second' : 'image';
             $cost = $this->cost($providerKey, $modelKey, $unit);

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Enums\AutomationMode;
+use App\Enums\TaskStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,6 +29,9 @@ class WorkflowTaskResource extends JsonResource
                 (bool) ($this->input['user_configured'] ?? false),
             ),
             'attempts' => $this->attempts,
+            'prompt' => $this->input['prompt'] ?? null,
+            // The server decides whether instructions can be changed, so the page does not guess.
+            'prompt_editable' => $this->handler === 'model' && $this->status === TaskStatus::Pending,
             'output' => $this->output,
             'error' => $this->error,
             'started_at' => $this->started_at?->toIso8601String(),

@@ -36,6 +36,8 @@ class PaymentCheckout
                 return $locked->checkout_url;
             }
 
+            $this->refuseUnchargeableOffer($locked);
+
             [$url, $reference] = match ($locked->provider) {
                 'flutterwave' => $this->flutterwaveCheckout($locked, $user),
                 'paddle' => $this->paddleCheckout($locked, $user),
@@ -46,6 +48,24 @@ class PaymentCheckout
 
             return $url;
         });
+    }
+
+    /**
+     * A welcome-offer price is recorded on the purchase, but the providers still charge their fixed list
+     * price (see the plan price ids). Refuse rather than quote a price the customer would not be charged.
+     */
+    private function refuseUnchargeableOffer(Purchase $purchase): void
+    {
+        if ($purchase->kind === Purchase::KIND_PACK) {
+            return;
+        }
+
+        $plan = Plan::query()->where('key', $purchase->item_key)->firstOrFail();
+        $list = $purchase->interval === Subscription::INTERVAL_YEARLY ? $plan->yearly_micros : $plan->monthly_micros;
+
+        if ($purchase->amount_micros < $list) {
+            throw new PaymentNotConfigured('Your welcome offer cannot be charged yet. Please try again later.');
+        }
     }
 
     /** @return array{0: string, 1: string} */

@@ -94,6 +94,13 @@ class ProductionRunner
         }
 
         $actual = $this->quotes->settleText('anthropic', $production->model_key, $result->usage);
+
+        // The script is paid for as soon as the model has replied, even if the reply is not usable.
+        $production->forceFill([
+            'script_price' => $actual?->priceMicros ?? 0,
+            'script_cost' => $actual?->costMicros ?? 0,
+        ])->save();
+
         $parsed = DirectorScript::parse((string) ($result->output['text'] ?? ''), 'story', []);
 
         if (! $parsed['ok']) {
@@ -101,11 +108,7 @@ class ProductionRunner
         }
 
         $script = $parsed['script'];
-        $production->forceFill([
-            'script' => $script,
-            'script_price' => $actual?->priceMicros ?? 0,
-            'script_cost' => $actual?->costMicros ?? 0,
-        ])->save();
+        $production->forceFill(['script' => $script])->save();
 
         if ($actual !== null) {
             $this->usage->record($production->user, UsageRecorder::TYPE_PRODUCTION, $production->id, 'script', 'anthropic', $production->model_key, $actual, [
@@ -186,6 +189,9 @@ class ProductionRunner
                 continue;
             }
             if (! $result->ok) {
+                // A failed job is not billed by fal, so the scene stops counting as sent before the production is settled.
+                $scene->forceFill(['status' => 'failed', 'error' => $result->error])->save();
+
                 throw new DomainException('A keyframe failed: '.($result->error ?? 'unknown error'));
             }
 
@@ -248,6 +254,8 @@ class ProductionRunner
                 continue;
             }
             if (! $result->ok) {
+                $scene->forceFill(['status' => 'failed', 'error' => $result->error])->save();
+
                 throw new DomainException('A motion clip failed: '.($result->error ?? 'unknown error'));
             }
 

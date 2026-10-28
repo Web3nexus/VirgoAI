@@ -167,7 +167,7 @@ it('makes a full video from a prompt: script, keyframes, motion, and one joined 
         ->and($this->user->refresh()->balance_micros)->toBe(50_000_000 - $used);
 });
 
-it('refunds the whole reservation when a keyframe fails', function () {
+it('charges only what was sent when a keyframe fails, and returns the rest', function () {
     fullVideoHttp('FAILED');
 
     $this->actingAs($this->user, 'sanctum')
@@ -179,9 +179,17 @@ it('refunds the whole reservation when a keyframe fails', function () {
     $runner->advance($production->refresh());
     $runner->advance($production->refresh());
 
-    expect($production->refresh()->status)->toBe('failed')
+    $production->refresh();
+    $generation = Generation::find($production->generation_id);
+    // The script was paid for, and the second keyframe was already sent to fal and is still in flight. The failed
+    // keyframe is not billed by fal, so it is not charged.
+    $inFlight = (int) $production->scenes()->where('position', 2)->value('keyframe_price');
+
+    expect($production->status)->toBe('failed')
         ->and($production->error)->toContain('keyframe')
-        ->and($this->user->refresh()->balance_micros)->toBe(50_000_000);
+        ->and($generation->price_micros)->toBe($production->script_price + $inFlight)
+        ->and($inFlight)->toBeGreaterThan(0)
+        ->and($this->user->refresh()->balance_micros)->toBe(50_000_000 - $generation->price_micros);
 });
 
 it('refuses a YouTube link as a full-video prompt, and an unknown format', function () {

@@ -83,6 +83,13 @@ class PriceQuoter
             throw new PriceUnavailable("The fal model [{$modelKey}] is not supported.");
         }
 
+        // The rate table prices the call as it is sent: its size, quality, resolution and billed seconds.
+        $rate = FalRates::quote($endpoint, $capability, $options);
+
+        if ($rate !== null) {
+            return new Quote($rate['cost_micros'], $this->settings->sell($rate['cost_micros']), $rate['unit'], $rate['quantity'], true);
+        }
+
         $price = ModelPrice::query()
             ->where('provider_key', 'fal')
             ->where('model_key', $endpoint)
@@ -92,10 +99,20 @@ class PriceQuoter
             throw new PriceUnavailable("No price is set for [{$modelKey}] yet. Run php artisan ai:sync to read fal's price.");
         }
 
+        // A synced price is one number for the model, so it cannot tell resolutions apart. 1080p video is refused
+        // until the rate table has its price, rather than charged at the cheaper rate.
+        if ($capability === Capability::Video && ($options['resolution'] ?? '720p') !== '720p') {
+            throw new PriceUnavailable("[{$modelKey}] has no price at {$options['resolution']} yet.");
+        }
+
         [$quantity, $unit] = $this->fulfilledUnits($price->unit, $capability, $options);
 
         if ($quantity === null) {
             throw new PriceUnavailable("fal bills [{$modelKey}] per [{$price->unit}], which this app cannot price yet.");
+        }
+
+        if ($unit === 'second') {
+            $quantity = FalEndpoints::billableSeconds($endpoint, $options['duration'] ?? null);
         }
 
         $cost = Money::times($price->cost_micros, $quantity);

@@ -7,6 +7,7 @@ use App\Models\LedgerEntry;
 use App\Models\User;
 use DomainException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * The only code that changes a balance. Every change writes a ledger row, inside a transaction that
@@ -48,21 +49,37 @@ class Wallet
         });
     }
 
-    /** A text run finished. Replace the reserved price with the price of the tokens actually used. */
+    /**
+     * A run finished, or stopped part-way. Replace the reserved price with what was used, and give back the rest.
+     *
+     * The user is never charged more than the run reserved. If the provider cost more than the reservation, the
+     * difference is logged as an overrun so the owner sees the loss, instead of the balance going negative silently.
+     */
     public function settle(Generation $generation, Quote $actual): void
     {
         DB::transaction(function () use ($generation, $actual) {
             $run = Generation::query()->whereKey($generation->id)->lockForUpdate()->firstOrFail();
             $account = User::query()->whereKey($run->user_id)->lockForUpdate()->firstOrFail();
 
-            $difference = $run->price_micros - $actual->priceMicros;
+            $charged = min($actual->priceMicros, (int) $run->price_micros);
+
+            if ($actual->priceMicros > $run->price_micros) {
+                Log::error('Run cost more than it reserved', [
+                    'generation_id' => $run->id,
+                    'reserved_micros' => $run->price_micros,
+                    'used_price_micros' => $actual->priceMicros,
+                    'used_cost_micros' => $actual->costMicros,
+                ]);
+            }
+
+            $difference = $run->price_micros - $charged;
 
             if ($difference !== 0) {
-                $this->post($account, $difference, LedgerEntry::TYPE_SETTLEMENT, 'Settled to tokens used', $run->id);
+                $this->post($account, $difference, LedgerEntry::TYPE_SETTLEMENT, 'Settled to what was used', $run->id);
             }
 
             $run->forceFill([
-                'price_micros' => $actual->priceMicros,
+                'price_micros' => $charged,
                 'cost_micros' => $actual->costMicros,
                 'cost_usd' => Money::toUsd($actual->costMicros),
             ])->save();

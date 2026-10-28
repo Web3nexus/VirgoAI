@@ -46,10 +46,20 @@ export type WorkflowTask = {
   approval_policy: string
   requires_approval: boolean
   attempts: number
+  /** Instructions for a model stage. Null when the stage has none. */
+  prompt: string | null
+  /** True only while a model stage is pending. The server decides this. */
+  prompt_editable: boolean
   output: Record<string, unknown> | null
   error: string | null
   started_at: string | null
   finished_at: string | null
+}
+
+/** One edge of the task graph: `task_id` waits for `depends_on_task_id`. */
+export type WorkflowDependency = {
+  task_id: string
+  depends_on_task_id: string
 }
 
 export type Approval = {
@@ -88,6 +98,7 @@ export type Workflow = {
   updated_at: string
   progress: WorkflowProgress | null
   tasks: WorkflowTask[]
+  dependencies: WorkflowDependency[]
   approvals: Approval[]
 }
 

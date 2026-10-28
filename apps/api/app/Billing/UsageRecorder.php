@@ -24,6 +24,8 @@ class UsageRecorder
 
     public const TYPE_PRODUCTION = 'production';
 
+    public const TYPE_FILM = 'film';
+
     /**
      * @param  array{input?: int, output?: int, units?: float, unit_label?: string}  $measure
      */

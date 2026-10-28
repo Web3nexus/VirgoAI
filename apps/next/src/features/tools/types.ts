@@ -61,5 +61,5 @@ export type RunToolPayload = {
   skill_key?: string
   image_url?: string
   styles?: { environment?: string; character?: string; look?: string }
-  resolution?: '480p' | '720p' | '1080p'
+  resolution?: '720p' | '1080p'
 }

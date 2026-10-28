@@ -60,6 +60,6 @@ class ApprovalController extends Controller
     {
         $workflow = $approval->workflow()->firstOrFail();
 
-        return new WorkflowResource($workflow->load(['tasks', 'approvalRequests']));
+        return new WorkflowResource($workflow->load(['tasks', 'dependencies', 'approvalRequests']));
     }
 }

@@ -6,6 +6,7 @@ use App\Ai\Contracts\AsyncProviderAdapter;
 use App\Ai\Data\GenerationRequest;
 use App\Ai\Data\GenerationResult;
 use App\Ai\Fal\FalEndpoints;
+use App\Ai\Fal\FalInputValidator;
 use App\Enums\Capability;
 use App\Settings\ProviderCredentials;
 use Illuminate\Http\Client\PendingRequest;
@@ -63,6 +64,11 @@ class FalAdapter implements AsyncProviderAdapter
 
         if ($endpoint === null) {
             return GenerationResult::failure("Fal model [{$request->modelKey}] is not one this app supports.", $this->key(), $request->modelKey);
+        }
+
+        // Refused before the submit, so a bad option costs nothing.
+        if (($problem = FalInputValidator::problem($endpoint, $request)) !== null) {
+            return GenerationResult::failure($problem, $this->key(), $request->modelKey);
         }
 
         try {
